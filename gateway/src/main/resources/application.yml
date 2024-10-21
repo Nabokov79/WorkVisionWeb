@@ -1,0 +1,26 @@
+springdoc:
+  swagger-ui:
+    path: /swagger-ui-gateway.html
+
+server:
+  port: 8081
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: companyStructure
+          uri: http://localhost:8082
+        - id: diagnosedEquipmentQCL
+          uri: http://localhost:8083
+        - id: diagnosticDocumentQCL
+          uri: http://localhost:8084
+        - id: fileService
+          uri: http://localhost:8085

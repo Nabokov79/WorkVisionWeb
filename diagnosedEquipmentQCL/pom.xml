@@ -10,9 +10,9 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>companyStructure</artifactId>
+    <artifactId>diagnosedEquipmentQCL</artifactId>
     <version>1.0.0</version>
-    <name>Company structure</name>
+    <name>Diagnosed equipment QCL</name>
 
     <dependencies>
         <dependency>
@@ -165,4 +165,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

@@ -10,9 +10,9 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>companyStructure</artifactId>
+    <artifactId>diagnosticDocumentQCL</artifactId>
     <version>1.0.0</version>
-    <name>Company structure</name>
+    <name>Diagnostic document QCL</name>
 
     <dependencies>
         <dependency>
