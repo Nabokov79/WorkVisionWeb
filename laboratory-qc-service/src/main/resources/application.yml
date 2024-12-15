@@ -1,0 +1,25 @@
+springdoc:
+  swagger-ui:
+    path: /swagger-ui-laboratory-QC-service.html
+
+server:
+  port: 8082
+
+spring:
+  application:
+    name: laboratory-QC-service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    hikari:
+      username: postgres
+      password: mywords
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-service:8761/eureka
+    healthcheck:
+      enabled: true
+  instance:
+    preferIpAddress: true
