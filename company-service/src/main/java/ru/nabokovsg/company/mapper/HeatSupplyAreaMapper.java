@@ -17,8 +17,12 @@ public interface HeatSupplyAreaMapper {
 
     HeatSupplyArea mapToUpdateHeatSupplyArea(UpdateHeatSupplyAreaDto areaDto);
 
+
+    @Mapping(source = "branch", target = "branch")
     @Mapping(target = "id", ignore = true)
-    HeatSupplyArea mapWithData(@MappingTarget HeatSupplyArea area, Branch branch);
+    @Mapping(target = "fullName", ignore = true)
+    @Mapping(target = "shortName", ignore = true)
+    HeatSupplyArea mapWithBranch(@MappingTarget HeatSupplyArea area, Branch branch);
 
     ResponseHeatSupplyAreaDto mapToFullHeatSupplyAreaDto(HeatSupplyArea heatSupplyArea);
 

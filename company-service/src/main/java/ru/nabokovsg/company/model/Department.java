@@ -1,5 +1,6 @@
 package ru.nabokovsg.company.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +24,8 @@ public class Department {
     private String shortName;
     @Column(name = "address")
     private String address;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "branch_id",  nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    @JsonIgnore
     private Branch branch;
 }

@@ -12,7 +12,10 @@ import ru.nabokovsg.company.mapper.DepartmentMapper;
 import ru.nabokovsg.company.model.Department;
 import ru.nabokovsg.company.repository.DepartmentRepository;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +35,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         return mapper.mapToShortDepartmentDto(
                 repository.save(repository.save(map(mapper.mapToDepartment(departmentDto)
-                                                  , departmentDto.getAddressId()
-                                                  , departmentDto.getBranchId())))
-        );
+                                                  , departmentDto.getBranchId()
+                                                  , departmentDto.getAddressId()))));
     }
 
     @Override
@@ -42,9 +44,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         if (repository.existsById(departmentDto.getId())) {
             return mapper.mapToShortDepartmentDto(
                     repository.save(repository.save(map(mapper.mapToUpdateDepartment(departmentDto)
-                                                      , departmentDto.getAddressId()
-                                                      , departmentDto.getBranchId())))
-            );
+                                                                , departmentDto.getBranchId()
+                                                                , departmentDto.getAddressId()))));
         }
         throw new NotFoundException(
                 String.format("Department with name=%s not found for update.", departmentDto.getFullName()));
@@ -58,18 +59,17 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<ResponseShortDepartmentDto> getAll(Long branchId, String name) {
+        Set<Department> departments;
         if (branchId != null && branchId > 0) {
-            return repository.findByBranchId(branchId)
-                    .stream()
-                    .map(mapper::mapToShortDepartmentDto)
-                    .toList();
+            departments = repository.findByBranchId(branchId);
+        } else {
+            departments = new HashSet<>(repository.findAll());
         }
-        List<Department> departments = repository.findAll();
         if (name != null) {
             String fullName = name.toLowerCase();
             departments = departments.stream()
                                      .filter(v -> v.getFullName().toLowerCase().contains(fullName))
-                                     .toList();
+                                     .collect(Collectors.toSet());
         }
         return departments.stream()
                           .map(mapper::mapToShortDepartmentDto)

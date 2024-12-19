@@ -17,4 +17,6 @@ public class ResponseShortOrganizationDto {
     private String fullName;
     @Schema(description = "Краткое наименование организации")
     private String shortName;
+    @Schema(description = "Адрес организации")
+    private String address;
 }

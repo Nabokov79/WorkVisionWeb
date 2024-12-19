@@ -12,7 +12,10 @@ import ru.nabokovsg.company.mapper.HeatSupplyAreaMapper;
 import ru.nabokovsg.company.model.HeatSupplyArea;
 import ru.nabokovsg.company.repository.HeatSupplyAreaRepository;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,22 +57,21 @@ public class HeatSupplyAreaServiceImpl implements HeatSupplyAreaService {
 
     @Override
     public List<ResponseShortHeatSupplyAreaDto> getAll(Long branchId, String name) {
+        Set<HeatSupplyArea> heatSupplyAreas;
         if (branchId != null && branchId > 0) {
-            return repository.findAllByBranchId(branchId)
-                             .stream()
-                             .map(mapper::mapToShortHeatSupplyAreaDto)
-                             .toList();
+            heatSupplyAreas = repository.findAllByBranchId(branchId);
+        } else {
+            heatSupplyAreas = new HashSet<>(repository.findAll());
         }
-        List<HeatSupplyArea> areas = repository.findAll();
         if (name != null) {
             String fullName = name.toLowerCase();
-            areas = areas.stream()
-                          .filter(v -> v.getFullName().toLowerCase().contains(fullName))
-                          .toList();
+            heatSupplyAreas = heatSupplyAreas.stream()
+                                             .filter(v -> v.getFullName().toLowerCase().contains(fullName))
+                                             .collect(Collectors.toSet());
         }
-        return areas.stream()
-                    .map(mapper::mapToShortHeatSupplyAreaDto)
-                    .toList();
+        return heatSupplyAreas.stream()
+                              .map(mapper::mapToShortHeatSupplyAreaDto)
+                              .toList();
     }
 
     @Override
@@ -82,6 +84,6 @@ public class HeatSupplyAreaServiceImpl implements HeatSupplyAreaService {
     }
 
     private HeatSupplyArea map(HeatSupplyArea heatSupplyArea, Long branchId) {
-        return mapper.mapWithData(heatSupplyArea, branchService.getById(branchId));
+        return mapper.mapWithBranch(heatSupplyArea, branchService.getById(branchId));
     }
 }

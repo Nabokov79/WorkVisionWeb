@@ -18,6 +18,10 @@ public interface DepartmentMapper {
     Department mapToUpdateDepartment(UpdateDepartmentDto department);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "fullName", ignore = true)
+    @Mapping(target = "shortName", ignore = true)
+    @Mapping(source = "address", target = "address")
+    @Mapping(source = "branch", target = "branch")
     Department mapWithData(@MappingTarget Department department, String address, Branch branch);
 
     ResponseDepartmentDto mapToFullDepartmentDto(Department department);

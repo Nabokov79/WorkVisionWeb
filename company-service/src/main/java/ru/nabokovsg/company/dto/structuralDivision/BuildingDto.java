@@ -17,4 +17,6 @@ public class BuildingDto {
     private String buildingType;
     @Schema(description = "Название")
     private String login;
+    @Schema(description = "Адрес")
+    private String address;
 }

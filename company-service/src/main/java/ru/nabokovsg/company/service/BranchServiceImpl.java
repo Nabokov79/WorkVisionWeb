@@ -12,7 +12,10 @@ import ru.nabokovsg.company.exceptions.BadRequestException;
 import ru.nabokovsg.company.exceptions.NotFoundException;
 import ru.nabokovsg.company.model.Branch;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,18 +58,17 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     public List<ResponseShortBranchDto> getAll(Long id, String name) {
+        Set<Branch> branches;
         if (id != null && id > 0) {
-            return repository.findAllByOrganizationId(id)
-                             .stream()
-                             .map(mapper::mapToShortBranchDto)
-                             .toList();
+            branches = repository.findAllByOrganizationId(id);
+        } else {
+            branches = new HashSet<>(repository.findAll());
         }
-        List<Branch> branches = repository.findAll();
-        if (name != null) {
+        if (name != null && !name.isBlank()) {
             String fullName = name.toLowerCase();
             branches = branches.stream()
                                .filter(v -> v.getFullName().toLowerCase().contains(fullName))
-                               .toList();
+                               .collect(Collectors.toSet());
         }
         return branches.stream()
                        .map(mapper::mapToShortBranchDto)

@@ -52,18 +52,19 @@ public class AddressServiceImpl implements AddressService {
     }
 
     private String toString(Address address) {
-        String string = String.join(", ", address.getCity()
-                , String.join(" ", address.getStreet()
-                        , "д.", String.valueOf(address.getHouseNumber())));
+        String delimiter = ", ";
+        String string = String.join(delimiter, address.getCity()
+                , String.join(delimiter, address.getStreet()
+                        , String.join("",  "д.", String.valueOf(address.getHouseNumber()))));
         if (address.getBuildingNumber() != null) {
-            string = String.join(", ", string, String.join(""
+            string = String.join(delimiter, string, String.join(""
                     , "корп.", String.valueOf(address.getBuildingNumber())));
         }
         if (address.getLetter() != null) {
-            string = String.join(", ", string, String.join("", "лит.", address.getLetter()));
+            string = String.join(delimiter, string, String.join("", "лит.", address.getLetter()));
         }
         if (address.getIndex() != null) {
-            return String.join(", ", String.valueOf(address.getIndex()), string);
+            return String.join(delimiter, String.valueOf(address.getIndex()), string);
         } else {
             return string;
         }

@@ -1,5 +1,6 @@
 package ru.nabokovsg.company.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +22,8 @@ public class HeatSupplyArea {
     private String fullName;
     @Column(name = "short_name")
     private String shortName;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "branch_id",  nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "branch_id", nullable = false)
+    @JsonIgnore
     private Branch branch;
 }

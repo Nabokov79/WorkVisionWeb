@@ -25,6 +25,9 @@ public class Organization {
     private String shortName;
     @Column(name = "address")
     private String address;
-    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "organization",
+               orphanRemoval = true,
+               cascade = CascadeType.REMOVE,
+               fetch = FetchType.EAGER)
     private List<Branch> branches;
 }

@@ -1,5 +1,6 @@
 package ru.nabokovsg.company.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,13 +26,23 @@ public class Branch {
     private String shortName;
     @Column(name = "address")
     private String address;
-    @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "branch",
+              orphanRemoval = true,
+              cascade = CascadeType.REMOVE,
+              fetch = FetchType.EAGER)
     private List<HeatSupplyArea> heatSupplyAreas;
-    @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "branch",
+            orphanRemoval = true,
+            cascade = CascadeType.REMOVE,
+            fetch = FetchType.EAGER)
     private List<Department> departments;
-    @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "branch",
+            orphanRemoval = true,
+            cascade = CascadeType.REMOVE,
+            fetch = FetchType.EAGER)
     private List<ExploitationRegion> exploitationRegions;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id",  nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "organization_id")
+    @JsonIgnore
     private Organization organization;
 }

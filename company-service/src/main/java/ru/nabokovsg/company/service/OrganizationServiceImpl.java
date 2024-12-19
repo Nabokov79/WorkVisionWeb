@@ -59,7 +59,6 @@ public class OrganizationServiceImpl implements OrganizationService {
                                    .toList();
     }
 
-
     @Override
     public void delete(Long id) {
         if (repository.existsById(id)) {
@@ -72,7 +71,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Organization getById(Long id) {
         return repository.findById(id).orElseThrow(() -> new NotFoundException(
-                                                    String.format("Organization with id=%s not found for license",id)));
+                                                    String.format("Organization with id=%s not found",id)));
     }
 
     private Organization map(Organization organization, Long addressId) {

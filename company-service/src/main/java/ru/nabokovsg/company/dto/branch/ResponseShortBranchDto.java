@@ -19,4 +19,6 @@ public class ResponseShortBranchDto {
     private String fullName;
     @Schema(description = "Краткое наименование")
     private String shortName;
+    @Schema(description = "Адрес филиала")
+    private String address;
 }

@@ -1,5 +1,6 @@
 package ru.nabokovsg.company.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +24,8 @@ public class Building {
     private String login;
     @Column(name = "address")
     private String address;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "region_id",  nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "region_id")
+    @JsonIgnore
     private ExploitationRegion exploitationRegion;
 }
