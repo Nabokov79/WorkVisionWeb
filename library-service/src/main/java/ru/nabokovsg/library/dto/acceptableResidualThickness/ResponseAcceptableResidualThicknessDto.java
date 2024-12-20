@@ -14,13 +14,13 @@ public class ResponseAcceptableResidualThicknessDto {
     @Schema(description = "Идентификатор")
     private Long id;
     @Schema(description = "Идентификатор типа оборудования")
-    private Long equipmentTypeId;
+    private Long equipmentLibraryId;
     @Schema(description = "Идентификатор элемента оборудования")
-    private Long elementTypeId;
+    private Long elementLibraryId;
     @Schema(description = "Идентификатор подэлемента оборудования")
-    private Long partElementTypeId;
+    private Long partElementLibraryId;
     @Schema(description = "Типаразмер элемента, подэлемента")
-    private String standardSizeString;
+    private String standardSize;
     @Schema(description = "Минимальная допустимая толщина стенки элемента")
     private Double acceptableThickness;
     @Schema(description = "Минимальная допустимая толщина стенки элемента в процентах")

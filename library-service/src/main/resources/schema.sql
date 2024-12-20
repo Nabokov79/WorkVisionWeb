@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS ACCEPTABLE_DEVIATIONS_GEODESY
     acceptable_precipitation          INTEGER                                 NOT NULL,
     max_difference_neighboring_points INTEGER                                 NOT NULL,
     max_difference_diametric_points   INTEGER                                 NOT NULL,
-    CONSTRAINT pk_permissibleDeviationsGeodesy PRIMARY KEY (id),
-    CONSTRAINT UQ_PERMISSIBLE_DEVIATIONS_GEODESY UNIQUE (equipment_library_id, fulls, old)
+    CONSTRAINT pk_acceptableDeviationsGeodesy PRIMARY KEY (id),
+    CONSTRAINT UQ_ACCEPTABLE_DEVIATIONS_GEODESY UNIQUE (equipment_library_id, fulls, old)
 );
 
 CREATE TABLE IF NOT EXISTS ACCEPTABLE_METAL_HARDNESS
@@ -19,8 +19,11 @@ CREATE TABLE IF NOT EXISTS ACCEPTABLE_METAL_HARDNESS
     element_library_id      BIGINT                                  NOT NULL,
     part_element_library_id BIGINT,
     standard_size_string    VARCHAR                                 NOT NULL,
+    thickness               DOUBLE PRECISION,
     min_diameter            INTEGER,
     min_thickness           DOUBLE PRECISION,
+    max_diameter            INTEGER,
+    max_thickness           DOUBLE PRECISION,
     min_hardness            INTEGER                                 NOT NULL,
     max_hardness            INTEGER,
     measurement_error       FLOAT,
@@ -34,10 +37,6 @@ CREATE TABLE IF NOT EXISTS ACCEPTABLE_RESIDUAL_THICKNESS
     element_library_id      BIGINT                                  NOT NULL,
     part_element_library_id BIGINT,
     standard_size_string    VARCHAR                                 NOT NULL,
-    min_diameter            INTEGER,
-    min_thickness           DOUBLE PRECISION,
-    max_diameter            INTEGER,
-    max_thickness           DOUBLE PRECISION,
     acceptable_thickness    DOUBLE PRECISION,
     acceptable_percent      INTEGER,
     measurement_error       FLOAT,

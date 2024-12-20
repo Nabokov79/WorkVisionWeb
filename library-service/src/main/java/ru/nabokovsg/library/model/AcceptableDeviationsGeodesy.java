@@ -16,7 +16,7 @@ public class AcceptableDeviationsGeodesy {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
     @Column(name = "equipment_library_id")
     private Long equipmentLibraryId;
     @Column(name = "fulls")

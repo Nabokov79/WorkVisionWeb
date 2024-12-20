@@ -14,7 +14,7 @@ public class ResponseAcceptableDeviationsGeodesyDto {
     @Schema(description = "Идентификатор")
     private Long id;
     @Schema(description = "Идентификатор типа оборудования")
-    private Long equipmentTypeId;
+    private Long equipmentLibraryId;
     @Schema(description = "Полное или пустое оборудование")
     private Boolean full;
     @Schema(description = "Старое или новое оборудование")

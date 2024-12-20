@@ -12,6 +12,7 @@ import ru.nabokovsg.equipment.exceptions.BadRequestException;
 import ru.nabokovsg.equipment.exceptions.NotFoundException;
 import ru.nabokovsg.equipment.mapper.library.EquipmentLibraryMapper;
 import ru.nabokovsg.equipment.model.library.EquipmentLibrary;
+import ru.nabokovsg.equipment.model.library.QEquipmentLibrary;
 import ru.nabokovsg.equipment.repository.library.EquipmentLibraryRepository;
 
 import java.util.List;

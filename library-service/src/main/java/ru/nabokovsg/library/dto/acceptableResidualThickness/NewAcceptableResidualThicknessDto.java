@@ -25,6 +25,8 @@ public class NewAcceptableResidualThicknessDto {
     private Long elementLibraryId;
     @Schema(description = "Идентификатор подэлемента элемента оборудования")
     private Long partElementLibraryId;
+    @Schema(description = "Толщина элемента")
+    private Double thickness;
     @Schema(description = "Минимальный диаметр")
     private Integer minDiameter;
     @Schema(description = "Толщина стенки минимального диаметра")

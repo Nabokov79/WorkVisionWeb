@@ -14,15 +14,17 @@ public class ResponseAcceptableMetalHardnessDto {
     @Schema(description = "Идентификатор")
     private Long id;
     @Schema(description = "Идентификатор типа оборудования")
-    private Long equipmentTypeId;
+    private Long equipmentLibraryId;
     @Schema(description = "Идентификатор элемента оборудования")
-    private Long elementTypeId;
+    private Long elementLibraryId;
     @Schema(description = "Идентификатор подэлемента оборудования")
-    private Long partElementTypeId;
+    private Long partElementLibraryId;
+    @Schema(description = "Типаразмер элемента, подэлемента")
+    private String standardSizeString;
     @Schema(description = "Минимальная допустимая твердость металла элемента")
-    private Integer minHardness;
+    private Integer minAcceptableHardness;
     @Schema(description = "Максимальная допустимая твердость металла элемента")
-    private Integer maxHardness;
+    private Integer maxAcceptableHardness;
     @Schema(description = "Допустимая погрешность измерения")
     private Float measurementError;
 }

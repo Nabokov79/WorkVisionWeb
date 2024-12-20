@@ -20,13 +20,13 @@ public class UpdateAcceptableMetalHardnessDto {
     @Schema(description = "Идентификатор типа оборудования")
     @NotNull(message = "equipmentTypeId should not be null")
     @Positive(message = "equipmentTypeId can only be positive")
-    private Long equipmentTypeId;
+    private Long equipmentLibraryId;
     @Schema(description = "Идентификатор элемента оборудования")
     @NotNull(message = "elementId should not be null")
     @Positive(message = "elementId can only be positive")
-    private Long elementTypeId;
+    private Long elementLibraryId;
     @Schema(description = "Идентификатор подэлемента элемента оборудования")
-    private Long partElementTypeId;
+    private Long partElementLibraryId;
     @Schema(description = "Минимальный допустимый диаметр")
     private Integer minAcceptableDiameter;
     @Schema(description = "Минимальная допустимая толщина стенки")

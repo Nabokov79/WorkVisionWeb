@@ -19,14 +19,14 @@ public class AcceptableResidualThicknessServiceImpl implements AcceptableResidua
 
     private final AcceptableResidualThicknessRepository repository;
     private final AcceptableResidualThicknessMapper mapper;
-    private final ConvertToStandardSizeStringService convertToString;
+    private final StandardSizeStringBuilderService convertToString;
 
     @Override
     public ResponseAcceptableResidualThicknessDto save(NewAcceptableResidualThicknessDto thicknessDto) {
-        AcceptableResidualThickness acceptableResidualThickness
-                = addStandardSizeString(mapper.mapToAcceptableThickness(thicknessDto));
-        boolean flag = getDuplicate(acceptableResidualThickness);
-        if (flag) {
+        AcceptableResidualThickness acceptableResidualThickness =
+                mapper.mapToAcceptableThickness(thicknessDto
+                        , convertToString.convertToString(mapper.mapToStandardSize(thicknessDto)));
+        if (getDuplicate(acceptableResidualThickness)) {
             throw new BadRequestException(
                     String.format("AcceptableResidualThickness thickness=%s is found", acceptableResidualThickness)
             );
@@ -37,8 +37,10 @@ public class AcceptableResidualThicknessServiceImpl implements AcceptableResidua
     @Override
     public ResponseAcceptableResidualThicknessDto update(UpdateAcceptableResidualThicknessDto thicknessDto) {
         if (repository.existsById(thicknessDto.getId())) {
-            return mapper.mapToResponseAcceptableResidualThicknessDto(
-                    repository.save(addStandardSizeString(mapper.mapToUpdateAcceptableThickness(thicknessDto))));
+            AcceptableResidualThickness acceptableResidualThickness =
+                    mapper.mapToUpdateAcceptableThickness(thicknessDto
+                                    , convertToString.convertToString(mapper.mapToUpdateStandardSize(thicknessDto)));
+            return mapper.mapToResponseAcceptableResidualThicknessDto(repository.save(acceptableResidualThickness));
         }
         throw new NotFoundException(
                 String.format("AcceptableResidualThickness with id=%s not found for update", thicknessDto.getId())
@@ -68,18 +70,11 @@ public class AcceptableResidualThicknessServiceImpl implements AcceptableResidua
                                                                       acceptableThickness.getEquipmentLibraryId()
                                                                     , acceptableThickness.getElementLibraryId()
                                                                     , acceptableThickness.getPartElementLibraryId()
-                                                                    , acceptableThickness.getStandardSizeString());
+                                                                    , acceptableThickness.getStandardSize());
         }
         return repository.existsByEquipmentLibraryIdAndElementLibraryIdAndStandardSizeString(
                                                                           acceptableThickness.getEquipmentLibraryId()
                                                                         , acceptableThickness.getElementLibraryId()
-                                                                        , acceptableThickness.getStandardSizeString());
-    }
-
-
-    private AcceptableResidualThickness addStandardSizeString(AcceptableResidualThickness acceptableResidualThickness) {
-        mapper.mapToStandardSizeString(acceptableResidualThickness
-                , convertToString.convertAcceptableResidualThickness(acceptableResidualThickness));
-        return acceptableResidualThickness;
+                                                                        , acceptableThickness.getStandardSize());
     }
 }

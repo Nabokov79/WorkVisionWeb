@@ -18,15 +18,17 @@ public class UpdateAcceptableResidualThicknessDto {
     @Positive(message = "id can only be positive")
     private Long id;
     @Schema(description = "Идентификатор типа оборудования")
-    @NotNull(message = "equipmentTypeId should not be null")
-    @Positive(message = "equipmentTypeId can only be positive")
-    private Long equipmentTypeId;
+    @NotNull(message = "equipmentLibraryId should not be null")
+    @Positive(message = "equipmentLibraryId can only be positive")
+    private Long equipmentLibraryId;
     @Schema(description = "Идентификатор элемента оборудования")
-    @NotNull(message = "elementId should not be null")
-    @Positive(message = "elementId can only be positive")
-    private Long elementTypeId;
+    @NotNull(message = "elementLibraryId should not be null")
+    @Positive(message = "elementLibraryId can only be positive")
+    private Long elementLibraryId;
     @Schema(description = "Идентификатор подэлемента элемента оборудования")
-    private Long partElementTypeId;
+    private Long partElementLibraryId;
+    @Schema(description = "Толщина элемента")
+    private Double thickness;
     @Schema(description = "Минимальный диаметр(для тройника, перехода)")
     private Integer minDiameter;
     @Schema(description = "Толщина стенки минимального диаметра")

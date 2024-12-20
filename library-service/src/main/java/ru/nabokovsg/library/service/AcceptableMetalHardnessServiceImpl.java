@@ -19,7 +19,7 @@ public class AcceptableMetalHardnessServiceImpl implements AcceptableMetalHardne
 
     private final AcceptableMetalHardnessRepository repository;
     private final AcceptableMetalHardnessMapper mapper;
-    private final ConvertToStandardSizeStringService convertToString;
+    private final StandardSizeStringBuilderService convertToString;
 
     @Override
     public ResponseAcceptableMetalHardnessDto save(NewAcceptableMetalHardnessDto hardnessDto) {
@@ -78,7 +78,7 @@ public class AcceptableMetalHardnessServiceImpl implements AcceptableMetalHardne
 
     private AcceptableMetalHardness addStandardSizeString(AcceptableMetalHardness acceptableMetalHardness) {
         mapper.mapToStandardSizeString(acceptableMetalHardness
-                , convertToString.convertAcceptableMetalHardness(acceptableMetalHardness));
+                , convertToString.convertToString(mapper.mapToStandardSize(acceptableMetalHardness)));
         return acceptableMetalHardness;
     }
 }
