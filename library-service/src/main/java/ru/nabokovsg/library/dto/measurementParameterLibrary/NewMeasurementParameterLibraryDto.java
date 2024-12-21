@@ -22,4 +22,13 @@ public class NewMeasurementParameterLibraryDto {
     @Schema(description = "Единица измерения параметра")
     @NotBlank(message = "unitMeasurement should not be blank")
     private String unitMeasurement;
+
+    @Override
+    public String toString() {
+        return "NewMeasurementParameterLibraryDto{" +
+                "parameterName='" + parameterName + '\'' +
+                ", maxAllowedValue=" + maxAllowedValue +
+                ", unitMeasurement='" + unitMeasurement + '\'' +
+                '}';
+    }
 }

@@ -5,5 +5,5 @@ import ru.nabokovsg.library.model.DefectLibrary;
 
 public interface DefectLibraryRepository extends JpaRepository<DefectLibrary, Long> {
 
-    DefectLibrary findByDefectName(String defectName);
+    boolean existsByDefectName(String defectName);
 }

@@ -5,7 +5,7 @@ import ru.nabokovsg.library.exceptions.BadRequestException;
 import ru.nabokovsg.library.model.StandardSize;
 
 @Service
-public class StandardSizeStringBuilderImpl implements StandardSizeStringBuilderService {
+public class StandardSizeStringBuilderImpl implements StandardSizeStringBuilder {
 
     @Override
     public String convertToString(StandardSize standardSize) {

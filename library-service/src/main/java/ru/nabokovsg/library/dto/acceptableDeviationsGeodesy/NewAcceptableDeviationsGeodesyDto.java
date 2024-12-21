@@ -40,4 +40,17 @@ public class NewAcceptableDeviationsGeodesyDto {
     @NotNull(message = "maxDifferenceDiametricPoints should not be null")
     @Positive(message = "maxDifferenceDiametricPoints can only be positive")
     private Integer maxDifferenceDiametricPoints;
+
+    @Override
+    public String toString() {
+        return "NewAcceptableDeviationsGeodesyDto{" +
+                "equipmentLibraryId=" + equipmentLibraryId +
+                ", full=" + full +
+                ", old=" + old +
+                ", volume=" + volume +
+                ", acceptablePrecipitation=" + acceptablePrecipitation +
+                ", maxDifferenceNeighboringPoints=" + maxDifferenceNeighboringPoints +
+                ", maxDifferenceDiametricPoints=" + maxDifferenceDiametricPoints +
+                '}';
+    }
 }

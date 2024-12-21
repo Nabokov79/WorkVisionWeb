@@ -7,7 +7,7 @@ import java.util.Set;
 
 public interface AcceptableDeviationsGeodesyRepository extends JpaRepository<AcceptableDeviationsGeodesy, Long> {
 
-    AcceptableDeviationsGeodesy findByEquipmentLibraryIdAndFullAndOld(Long equipmentLibraryId, Boolean full, Boolean old);
+    boolean existsByEquipmentLibraryIdAndFullAndOld(Long equipmentLibraryId, Boolean full, Boolean old);
 
     Set<AcceptableDeviationsGeodesy> findAllByEquipmentLibraryId(Long equipmentLibraryId);
 }

@@ -45,4 +45,21 @@ public class NewAcceptableResidualThicknessDto {
     @NotNull(message = "measurementError should not be null")
     @Positive(message = "measurementError can only be positive")
     private Float measurementError;
+
+    @Override
+    public String toString() {
+        return "NewAcceptableResidualThicknessDto{" +
+                "equipmentLibraryId=" + equipmentLibraryId +
+                ", elementLibraryId=" + elementLibraryId +
+                ", partElementLibraryId=" + partElementLibraryId +
+                ", thickness=" + thickness +
+                ", minDiameter=" + minDiameter +
+                ", minThickness=" + minThickness +
+                ", maxDiameter=" + maxDiameter +
+                ", maxThickness=" + maxThickness +
+                ", acceptableThickness=" + acceptableThickness +
+                ", acceptablePercent=" + acceptablePercent +
+                ", measurementError=" + measurementError +
+                '}';
+    }
 }

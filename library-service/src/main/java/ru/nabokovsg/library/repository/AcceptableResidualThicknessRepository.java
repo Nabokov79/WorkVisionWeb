@@ -9,11 +9,11 @@ public interface AcceptableResidualThicknessRepository extends JpaRepository<Acc
 
     Set<AcceptableResidualThickness> findAllByEquipmentLibraryId(Long equipmentLibraryId);
 
-    boolean existsByEquipmentLibraryIdAndElementLibraryIdAndStandardSizeString(Long equipmentLibraryId
+    boolean existsByEquipmentLibraryIdAndElementLibraryIdAndStandardSize(Long equipmentLibraryId
                                                                      , Long elementLibraryId
                                                                      , String standardSizeString);
 
-    boolean existsByEquipmentLibraryIdAndElementLibraryIdAndPartElementLibraryIdAndStandardSizeString(
+    boolean existsByEquipmentLibraryIdAndElementLibraryIdAndPartElementLibraryIdAndStandardSize(
                                                                                            Long equipmentLibraryId
                                                                                          , Long elementLibraryId
                                                                                          , Long partElementLibraryId

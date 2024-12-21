@@ -24,6 +24,9 @@ public class RepairLibrary {
     @Column(name = "calculation")
     @Enumerated(EnumType.STRING)
     private ParameterCalculationType calculation;
-    @OneToMany(mappedBy = "elementRepair", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "elementRepair",
+               orphanRemoval = true,
+               cascade = CascadeType.REMOVE,
+               fetch = FetchType.EAGER)
     private Set<MeasurementParameterLibrary> measuredParameters;
 }

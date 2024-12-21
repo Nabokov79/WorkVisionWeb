@@ -19,7 +19,7 @@ public class AcceptableResidualThicknessServiceImpl implements AcceptableResidua
 
     private final AcceptableResidualThicknessRepository repository;
     private final AcceptableResidualThicknessMapper mapper;
-    private final StandardSizeStringBuilderService convertToString;
+    private final StandardSizeStringBuilder convertToString;
 
     @Override
     public ResponseAcceptableResidualThicknessDto save(NewAcceptableResidualThicknessDto thicknessDto) {
@@ -28,8 +28,7 @@ public class AcceptableResidualThicknessServiceImpl implements AcceptableResidua
                         , convertToString.convertToString(mapper.mapToStandardSize(thicknessDto)));
         if (getDuplicate(acceptableResidualThickness)) {
             throw new BadRequestException(
-                    String.format("AcceptableResidualThickness thickness=%s is found", acceptableResidualThickness)
-            );
+                    String.format("AcceptableResidualThickness thickness=%s is found", thicknessDto));
         }
         return mapper.mapToResponseAcceptableResidualThicknessDto(repository.save(acceptableResidualThickness));
     }
@@ -66,13 +65,13 @@ public class AcceptableResidualThicknessServiceImpl implements AcceptableResidua
 
     private boolean getDuplicate(AcceptableResidualThickness acceptableThickness) {
         if (acceptableThickness.getPartElementLibraryId() != null) {
-            return repository.existsByEquipmentLibraryIdAndElementLibraryIdAndPartElementLibraryIdAndStandardSizeString(
+            return repository.existsByEquipmentLibraryIdAndElementLibraryIdAndPartElementLibraryIdAndStandardSize(
                                                                       acceptableThickness.getEquipmentLibraryId()
                                                                     , acceptableThickness.getElementLibraryId()
                                                                     , acceptableThickness.getPartElementLibraryId()
                                                                     , acceptableThickness.getStandardSize());
         }
-        return repository.existsByEquipmentLibraryIdAndElementLibraryIdAndStandardSizeString(
+        return repository.existsByEquipmentLibraryIdAndElementLibraryIdAndStandardSize(
                                                                           acceptableThickness.getEquipmentLibraryId()
                                                                         , acceptableThickness.getElementLibraryId()
                                                                         , acceptableThickness.getStandardSize());

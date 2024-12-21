@@ -27,35 +27,32 @@ public class DefectLibraryServiceImpl implements DefectLibraryService {
 
     @Override
     public ResponseDefectLibraryDto save(NewDefectLibraryDto defectDto) {
-        ParameterCalculationType calculationType = getTypeCalculation(defectDto.getCalculation());
-        DefectLibrary defect = repository.findByDefectName(defectDto.getDefectName());
-        if (defect == null) {
-            defect = repository.save(mapper.mapToTypeDefectLibrary(defectDto, calculationType));
-            defect.setMeasuredParameters(parameterService.save(new TypeMeasuredParameterBuilder.Builder()
-                                                                               .libraryDataType(LibraryDataType.DEFECT)
-                                                                               .calculationType(defect.getCalculation())
-                                                                               .defect(defect)
-                                                                               .build()
-                                                                            , defectDto.getMeasuredParameters()));
+        if (repository.existsByDefectName(defectDto.getDefectName())) {
+            throw new BadRequestException(String.format("DefectLibrary with defectDto=%s is found", defectDto));
         }
+        DefectLibrary defect = mapper.mapToTypeDefectLibrary(defectDto);
+        addTypeCalculation(defect, defectDto.getCalculation());
+        defect = repository.save(defect);
+        defect.setMeasuredParameters(
+                parameterService.save(new TypeMeasuredParameterBuilder.Builder()
+                                                                      .libraryDataType(LibraryDataType.DEFECT)
+                                                                      .calculation(defect.getCalculation())
+                                                                      .defect(defect)
+                                                                      .build()
+              , defectDto.getMeasuredParameters()));
         return mapper.mapToResponseTypeDefectLibraryDto(defect);
     }
 
     @Override
     public ResponseDefectLibraryDto update(UpdateDefectLibraryDto defectDto) {
         DefectLibrary defect = getById(defectDto.getId());
-        if (defect != null) {
-            ParameterCalculationType calculationType = getTypeCalculation(defectDto.getCalculation());
-            defect = repository.save(mapper.mapToUpdateTypeDefectLibrary(defectDto, calculationType));
-            defect.setMeasuredParameters(parameterService.update(new TypeMeasuredParameterBuilder.Builder()
-                                                                            .libraryDataType(LibraryDataType.DEFECT)
-                                                                            .calculationType(calculationType)
-                                                                            .defect(defect)
-                                                                            .build()
-                                                                    , defectDto.getMeasuredParameters()));
-            return mapper.mapToResponseTypeDefectLibraryDto(defect);
-        }
-        throw new NotFoundException(String.format("Defect with id=%s not found for update", defectDto.getId()));
+        mapper.mapToUpdateTypeDefectLibrary(defect, defectDto);
+        addTypeCalculation(defect, defectDto.getCalculation());
+        defect = repository.save(defect);
+        defect.setMeasuredParameters(
+                parameterService.update(defect.getMeasuredParameters()
+                        , defectDto.getMeasuredParameters()));
+        return mapper.mapToResponseTypeDefectLibraryDto(defect);
     }
 
     @Override
@@ -73,20 +70,21 @@ public class DefectLibraryServiceImpl implements DefectLibraryService {
 
     @Override
     public void delete(Long id) {
-        DefectLibrary defect = getById(id);
-        repository.deleteById(defect.getId());
-        parameterService.delete(defect.getMeasuredParameters());
-        throw new NotFoundException(String.format("Defect with id=%s not found for delete", id));
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return;
+        }
+        throw new NotFoundException(String.format("DefectLibrary with id=%s not found for delete", id));
     }
 
-    @Override
-    public DefectLibrary getById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("TypeDefectLibrary with id=%s not found", id)));
-    }
-
-    private ParameterCalculationType getTypeCalculation(String calculation) {
-        return ParameterCalculationType.from(calculation).orElseThrow(
+    private void addTypeCalculation(DefectLibrary defect, String calculation) {
+        ParameterCalculationType calculationType = ParameterCalculationType.from(calculation).orElseThrow(
                 () -> new BadRequestException(String.format("Unsupported calculation type=%s", calculation)));
+        mapper.mapWithParameterCalculationType(defect, calculationType);
+    }
+
+    private DefectLibrary getById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("DefectLibrary with id=%s not found", id)));
     }
 }

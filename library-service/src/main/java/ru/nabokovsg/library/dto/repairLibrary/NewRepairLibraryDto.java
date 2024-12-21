@@ -26,4 +26,13 @@ public class NewRepairLibraryDto {
     private String calculation;
     @Schema(description = "Измеряемые параметры ремонта элемента")
     private List<@Valid NewMeasurementParameterLibraryDto> measuredParameters;
+
+    @Override
+    public String toString() {
+        return "NewRepairLibraryDto{" +
+                "repairName='" + repairName + '\'' +
+                ", calculation='" + calculation + '\'' +
+                ", measuredParameters=" + measuredParameters +
+                '}';
+    }
 }

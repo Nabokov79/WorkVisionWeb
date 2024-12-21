@@ -1,5 +1,6 @@
 package ru.nabokovsg.library.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,10 +24,12 @@ public class MeasurementParameterLibrary {
     private Double maxAllowedValue;
     @Column(name = "unit_measurement")
     private String unitMeasurement;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "defect_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "defect_id")
+    @JsonIgnore
     private DefectLibrary defect;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "repair_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "repair_id")
+    @JsonIgnore
     private RepairLibrary elementRepair;
 }

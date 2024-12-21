@@ -5,5 +5,5 @@ import ru.nabokovsg.library.model.RepairLibrary;
 
 public interface RepairLibraryRepository extends JpaRepository<RepairLibrary, Long> {
 
-    RepairLibrary findByRepairName(String repairName);
+    boolean existsByRepairName(String repairName);
 }

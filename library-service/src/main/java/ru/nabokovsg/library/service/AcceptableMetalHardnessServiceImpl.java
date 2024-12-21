@@ -19,12 +19,12 @@ public class AcceptableMetalHardnessServiceImpl implements AcceptableMetalHardne
 
     private final AcceptableMetalHardnessRepository repository;
     private final AcceptableMetalHardnessMapper mapper;
-    private final StandardSizeStringBuilderService convertToString;
+    private final StandardSizeStringBuilder convertToString;
 
     @Override
     public ResponseAcceptableMetalHardnessDto save(NewAcceptableMetalHardnessDto hardnessDto) {
-        AcceptableMetalHardness acceptableMetalHardness
-                                                = addStandardSizeString(mapper.mapToAcceptableHardness(hardnessDto));
+        AcceptableMetalHardness acceptableMetalHardness = mapper.mapToAcceptableHardness(hardnessDto
+                                            , convertToString.convertToString(mapper.mapToStandardSize(hardnessDto)));
         if (getDuplicate(acceptableMetalHardness)) {
             throw new BadRequestException(
                     String.format("AcceptableHardness for hardness=%s is found", hardnessDto));
@@ -36,7 +36,8 @@ public class AcceptableMetalHardnessServiceImpl implements AcceptableMetalHardne
     public ResponseAcceptableMetalHardnessDto update(UpdateAcceptableMetalHardnessDto hardnessDto) {
         if (repository.existsById(hardnessDto.getId())) {
             return mapper.mapToResponseAcceptableMetalHardnessDto(
-                    repository.save(addStandardSizeString(mapper.mapToUpdateAcceptableHardness(hardnessDto))));
+                    repository.save(mapper.mapToUpdateAcceptableHardness(hardnessDto
+                                     , convertToString.convertToString(mapper.mapToUpdateStandardSize(hardnessDto)))));
         }
         throw new NotFoundException(
                 String.format("AcceptableHardness with id=%s not found for update", hardnessDto.getId())
@@ -63,22 +64,15 @@ public class AcceptableMetalHardnessServiceImpl implements AcceptableMetalHardne
 
     private boolean getDuplicate(AcceptableMetalHardness acceptableMetalHardness) {
         if (acceptableMetalHardness.getPartElementLibraryId() != null) {
-            return repository.existsByEquipmentLibraryIdAndElementLibraryIdAndPartElementLibraryIdAndStandardSizeString(
+            return repository.existsByEquipmentLibraryIdAndElementLibraryIdAndPartElementLibraryIdAndStandardSize(
                                                                       acceptableMetalHardness.getEquipmentLibraryId()
                                                                     , acceptableMetalHardness.getElementLibraryId()
                                                                     , acceptableMetalHardness.getPartElementLibraryId()
-                                                                    , acceptableMetalHardness.getStandardSizeString());
+                                                                    , acceptableMetalHardness.getStandardSize());
         }
-        return repository.existsByEquipmentLibraryIdAndElementLibraryIdAndStandardSizeString(
+        return repository.existsByEquipmentLibraryIdAndElementLibraryIdAndStandardSize(
                                                                   acceptableMetalHardness.getEquipmentLibraryId()
                                                                 , acceptableMetalHardness.getElementLibraryId()
-                                                                , acceptableMetalHardness.getStandardSizeString());
-    }
-
-
-    private AcceptableMetalHardness addStandardSizeString(AcceptableMetalHardness acceptableMetalHardness) {
-        mapper.mapToStandardSizeString(acceptableMetalHardness
-                , convertToString.convertToString(mapper.mapToStandardSize(acceptableMetalHardness)));
-        return acceptableMetalHardness;
+                                                                , acceptableMetalHardness.getStandardSize());
     }
 }

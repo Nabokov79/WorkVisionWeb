@@ -2,7 +2,6 @@ package ru.nabokovsg.library.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import ru.nabokovsg.library.dto.acceptableMetalHardness.NewAcceptableMetalHardnessDto;
 import ru.nabokovsg.library.dto.acceptableMetalHardness.ResponseAcceptableMetalHardnessDto;
 import ru.nabokovsg.library.dto.acceptableMetalHardness.UpdateAcceptableMetalHardnessDto;
@@ -12,15 +11,19 @@ import ru.nabokovsg.library.model.StandardSize;
 @Mapper(componentModel = "spring")
 public interface AcceptableMetalHardnessMapper {
 
-    AcceptableMetalHardness mapToAcceptableHardness(NewAcceptableMetalHardnessDto hardnessDto);
+    AcceptableMetalHardness mapToAcceptableHardness(NewAcceptableMetalHardnessDto hardnessDto
+                                                  , String standardSize);
 
-    AcceptableMetalHardness mapToUpdateAcceptableHardness(UpdateAcceptableMetalHardnessDto hardnessDto);
+    AcceptableMetalHardness mapToUpdateAcceptableHardness(UpdateAcceptableMetalHardnessDto hardnessDto
+                                                        , String standardSize);
 
     ResponseAcceptableMetalHardnessDto mapToResponseAcceptableMetalHardnessDto(AcceptableMetalHardness hardness);
 
-    void mapToStandardSizeString(@MappingTarget AcceptableMetalHardness acceptableMetalHardness, String standardSizeString);
+    @Mapping(source = "hardnessDto.minAcceptableDiameter", target = "minDiameter")
+    @Mapping(source = "hardnessDto.minAcceptableThickness", target = "minThickness")
+    StandardSize mapToStandardSize(NewAcceptableMetalHardnessDto hardnessDto);
 
-    @Mapping(source = "acceptableMetalHardness.minAcceptableDiameter", target = "minDiameter")
-    @Mapping(source = "acceptableMetalHardness.minAcceptableThickness", target = "minThickness")
-    StandardSize mapToStandardSize(AcceptableMetalHardness acceptableMetalHardness);
+    @Mapping(source = "hardnessDto.minAcceptableDiameter", target = "minDiameter")
+    @Mapping(source = "hardnessDto.minAcceptableThickness", target = "minThickness")
+    StandardSize mapToUpdateStandardSize(UpdateAcceptableMetalHardnessDto hardnessDto);
 }

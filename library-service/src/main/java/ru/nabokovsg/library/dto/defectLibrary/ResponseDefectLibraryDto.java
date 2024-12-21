@@ -19,7 +19,7 @@ public class ResponseDefectLibraryDto {
     @Schema(description = "Наименование дефекта")
     private String defectName;
     @Schema(description = "Указание недопустимости дефекта")
-    private Boolean notMeetRequirements;
+    private Boolean unacceptable;
     @Schema(description = "Использовать дефект для расчета остаточной толщины")
     private Boolean useCalculateThickness;
     @Schema(description = "Измеряемые параметры дефекта")

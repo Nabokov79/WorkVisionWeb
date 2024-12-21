@@ -19,8 +19,8 @@ public class ResponseAcceptableMetalHardnessDto {
     private Long elementLibraryId;
     @Schema(description = "Идентификатор подэлемента оборудования")
     private Long partElementLibraryId;
-    @Schema(description = "Типаразмер элемента, подэлемента")
-    private String standardSizeString;
+    @Schema(description = "Типоразмер элемента, подэлемента")
+    private String standardSize;
     @Schema(description = "Минимальная допустимая твердость металла элемента")
     private Integer minAcceptableHardness;
     @Schema(description = "Максимальная допустимая твердость металла элемента")

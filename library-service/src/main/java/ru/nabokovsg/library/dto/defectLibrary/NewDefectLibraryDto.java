@@ -31,4 +31,15 @@ public class NewDefectLibraryDto {
     private String calculation;
     @Schema(description = "Измеряемые параметры дефекта")
     private List<@Valid NewMeasurementParameterLibraryDto> measuredParameters;
+
+    @Override
+    public String toString() {
+        return "NewDefectLibraryDto{" +
+                "defectName='" + defectName + '\'' +
+                ", unacceptable=" + unacceptable +
+                ", useCalculateThickness=" + useCalculateThickness +
+                ", calculation='" + calculation + '\'' +
+                ", measuredParameters=" + measuredParameters +
+                '}';
+    }
 }

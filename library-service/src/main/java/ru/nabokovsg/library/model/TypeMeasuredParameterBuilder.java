@@ -3,13 +3,13 @@ package ru.nabokovsg.library.model;
 public class TypeMeasuredParameterBuilder {
 
     private final LibraryDataType libraryDataType;
-    private final ParameterCalculationType calculationType;
+    private final ParameterCalculationType calculation;
     private final DefectLibrary defect;
     private final RepairLibrary repair;
 
     public TypeMeasuredParameterBuilder(Builder builder) {
         this.libraryDataType = builder.libraryDataType;
-        this.calculationType = builder.calculationType;
+        this.calculation = builder.calculation;
         this.defect = builder.defect;
         this.repair = builder.repair;
     }
@@ -18,8 +18,8 @@ public class TypeMeasuredParameterBuilder {
         return libraryDataType;
     }
 
-    public ParameterCalculationType getCalculationType() {
-        return calculationType;
+    public ParameterCalculationType getCalculation() {
+        return calculation;
     }
 
     public DefectLibrary getDefect() {
@@ -32,7 +32,7 @@ public class TypeMeasuredParameterBuilder {
 
     public static class Builder {
         private LibraryDataType libraryDataType;
-        private ParameterCalculationType calculationType;
+        private ParameterCalculationType calculation;
         private DefectLibrary defect;
         private RepairLibrary repair;
 
@@ -41,8 +41,8 @@ public class TypeMeasuredParameterBuilder {
             return this;
         }
 
-        public Builder calculationType(ParameterCalculationType calculationType) {
-            this.calculationType = calculationType;
+        public Builder calculation(ParameterCalculationType calculation) {
+            this.calculation = calculation;
             return this;
         }
 

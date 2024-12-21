@@ -21,7 +21,7 @@ public class UpdateAcceptableDeviationsGeodesyDto {
     @Schema(description = "Идентификатор типа оборудования")
     @NotNull(message = "equipmentTypeId should not be null")
     @Positive(message = "equipmentTypeId can only be positive")
-    private Long equipmentTypeId;
+    private Long equipmentLibraryId;
     @Schema(description = "Полное или пустое оборудование")
     @NotNull(message = "full should not be null")
     private Boolean full;

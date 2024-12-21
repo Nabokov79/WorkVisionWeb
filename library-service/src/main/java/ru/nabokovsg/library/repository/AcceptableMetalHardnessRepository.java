@@ -9,11 +9,11 @@ public interface AcceptableMetalHardnessRepository extends JpaRepository<Accepta
 
     Set<AcceptableMetalHardness> findAllByEquipmentLibraryId(Long equipmentLibraryId);
 
-    boolean existsByEquipmentLibraryIdAndElementLibraryIdAndStandardSizeString(Long equipmentLibraryId
-                                                                             , Long elementLibraryId
-                                                                             , String standardSizeString);
+    boolean existsByEquipmentLibraryIdAndElementLibraryIdAndStandardSize(Long equipmentLibraryId
+                                                                       , Long elementLibraryId
+                                                                       , String standardSizeString);
 
-    boolean existsByEquipmentLibraryIdAndElementLibraryIdAndPartElementLibraryIdAndStandardSizeString(
+    boolean existsByEquipmentLibraryIdAndElementLibraryIdAndPartElementLibraryIdAndStandardSize(
                                                                                              Long equipmentLibraryId
                                                                                            , Long elementLibraryId
                                                                                            , Long partElementLibraryId

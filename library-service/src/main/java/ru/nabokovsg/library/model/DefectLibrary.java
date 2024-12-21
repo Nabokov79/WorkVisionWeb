@@ -28,6 +28,21 @@ public class DefectLibrary {
     @Column(name = "calculation")
     @Enumerated(EnumType.STRING)
     private ParameterCalculationType calculation;
-    @OneToMany(mappedBy = "defect", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "defect",
+               orphanRemoval = true,
+               cascade = CascadeType.REMOVE,
+               fetch = FetchType.EAGER)
     private Set<MeasurementParameterLibrary> measuredParameters;
+
+    @Override
+    public String toString() {
+        return "DefectLibrary{" +
+                "id=" + id +
+                ", defectName='" + defectName + '\'' +
+                ", unacceptable=" + unacceptable +
+                ", useCalculateThickness=" + useCalculateThickness +
+                ", calculation=" + calculation +
+                ", measuredParameters=" + measuredParameters +
+                '}';
+    }
 }

@@ -24,7 +24,7 @@ public class AcceptableMetalHardness {
     @Column(name = "part_element_library_id")
     private Long partElementLibraryId;
     @Column(name = "standard_size_string")
-    private String standardSizeString;
+    private String standardSize;
     @Column(name = "min_diameter")
     private Integer minAcceptableDiameter;
     @Column(name = "min_thickness")
@@ -33,4 +33,6 @@ public class AcceptableMetalHardness {
     private Integer minAcceptableHardness;
     @Column(name = "max_hardness")
     private Integer maxAcceptableHardness;
+    @Column(name = "measurement_error")
+    private Float measurementError;
 }

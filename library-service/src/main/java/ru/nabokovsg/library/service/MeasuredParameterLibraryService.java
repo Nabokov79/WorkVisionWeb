@@ -13,8 +13,6 @@ public interface MeasuredParameterLibraryService {
     Set<MeasurementParameterLibrary> save(TypeMeasuredParameterBuilder builder
                                             , List<NewMeasurementParameterLibraryDto> measuredParameters);
 
-    Set<MeasurementParameterLibrary> update(TypeMeasuredParameterBuilder builder
+    Set<MeasurementParameterLibrary> update(Set<MeasurementParameterLibrary> measuredParametersDb
                                               , List<UpdateMeasurementParameterLibraryDto> measuredParameters);
-
-    void delete(Set<MeasurementParameterLibrary> measuredParameters);
 }
