@@ -33,16 +33,4 @@ public class DefectLibrary {
                cascade = CascadeType.REMOVE,
                fetch = FetchType.EAGER)
     private Set<MeasurementParameterLibrary> measuredParameters;
-
-    @Override
-    public String toString() {
-        return "DefectLibrary{" +
-                "id=" + id +
-                ", defectName='" + defectName + '\'' +
-                ", unacceptable=" + unacceptable +
-                ", useCalculateThickness=" + useCalculateThickness +
-                ", calculation=" + calculation +
-                ", measuredParameters=" + measuredParameters +
-                '}';
-    }
 }
