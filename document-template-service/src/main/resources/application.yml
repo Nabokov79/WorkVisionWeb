@@ -8,12 +8,20 @@ server:
 spring:
   application:
     name: document-template-service
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: none
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
-    hikari:
-      username: postgres
-      password: mywords
+    username: postgres
+    password: mywords
+  sql:
+    init:
+      mode: always
 
 eureka:
   client:
