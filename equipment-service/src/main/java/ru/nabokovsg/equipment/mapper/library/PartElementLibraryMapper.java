@@ -24,6 +24,4 @@ public interface PartElementLibraryMapper {
 
     ResponsePartElementLibraryDto mapToResponsePartElementLibraryDto(PartElementLibrary partElement);
 
-    @Mapping(target = "id", ignore = true)
-    PartElementLibrary mapToCopyPartElementLibrary(PartElementLibrary partElement, ElementLibrary elementLibrary);
 }

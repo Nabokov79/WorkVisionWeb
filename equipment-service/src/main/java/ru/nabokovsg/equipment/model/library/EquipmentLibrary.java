@@ -27,6 +27,9 @@ public class EquipmentLibrary {
     private String orientation;
     @Column(name = "model")
     private String model;
-    @OneToMany(mappedBy = "equipmentLibrary", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "equipmentLibrary",
+               orphanRemoval = true,
+               cascade = CascadeType.REMOVE,
+               fetch = FetchType.EAGER)
     private Set<ElementLibrary> elements;
 }

@@ -19,7 +19,7 @@ public class PartElementLibrary {
     private Long id;
     @Column(name = "part_name")
     private String partElementName;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "element_id",  nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "element_id")
     private ElementLibrary elementLibrary;
 }

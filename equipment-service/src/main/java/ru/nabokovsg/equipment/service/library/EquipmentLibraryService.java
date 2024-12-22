@@ -13,6 +13,8 @@ public interface EquipmentLibraryService {
 
     ResponseEquipmentLibraryDto update(UpdateEquipmentLibraryDto equipmentDto);
 
+    ResponseEquipmentLibraryDto copy(NewEquipmentLibraryDto equipmentDto);
+
     ResponseEquipmentLibraryDto get(Long id);
 
     List<ResponseEquipmentLibraryDto> getAll();

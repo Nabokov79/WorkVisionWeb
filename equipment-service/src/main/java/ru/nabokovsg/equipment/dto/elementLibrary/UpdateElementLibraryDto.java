@@ -21,7 +21,7 @@ public class UpdateElementLibraryDto {
     @Schema(description = "Идентификатор оборудования")
     @NotNull(message = "equipmentType id should not be null")
     @Positive(message = "equipmentType id can only be positive")
-    private Long equipmentId;
+    private Long equipmentLibraryId;
     @Schema(description = "Наименование элемента")
     @NotBlank(message = "elementName should not be blank")
     private String elementName;

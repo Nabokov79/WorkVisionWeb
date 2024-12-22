@@ -48,26 +48,26 @@ services:
 #      retries: 5
 #      start_period: 10s
 
-  library-service:
-    build: library-service
-    container_name: library-service
+  equipment-service:
+    build: equipment-service
+    container_name: equipment-service
     ports:
-      - "8084:8084"
+      - "8083:8083"
     networks:
       - backend
     depends_on:
-      library-db:
+      equipment-db:
         condition: service_healthy
       eureka-service:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://library-db:5432/postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://equipment-db:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=mywords
 
-  library-db:
+  equipment-db:
     image: postgres:14-alpine
-    container_name: library-db
+    container_name: equipment-db
     ports:
       - "6548:5432"
     networks:
@@ -82,6 +82,41 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+#  library-service:
+#    build: library-service
+#    container_name: library-service
+#    ports:
+#      - "8084:8084"
+#    networks:
+#      - backend
+#    depends_on:
+#      library-db:
+#        condition: service_healthy
+#      eureka-service:
+#        condition: service_healthy
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://library-db:5432/postgres
+#      - SPRING_DATASOURCE_USERNAME=postgres
+#      - SPRING_DATASOURCE_PASSWORD=mywords
+#
+#  library-db:
+#    image: postgres:14-alpine
+#    container_name: library-db
+#    ports:
+#      - "6550:5432"
+#    networks:
+#      - backend
+#    environment:
+#      - POSTGRES_DB=postgres
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=mywords
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U habrpguser -d habrdb" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 10s
 
   gateway-service:
     build: gateway-service

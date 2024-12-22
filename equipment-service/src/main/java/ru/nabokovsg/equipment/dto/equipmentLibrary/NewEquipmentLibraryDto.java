@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.nabokovsg.equipment.model.common.Copy;
 
 @Setter
 @Getter
@@ -25,8 +26,6 @@ public class NewEquipmentLibraryDto {
     @Schema(description = "Положение оборудования")
     private String orientation;
     @Schema(description = "Идентификатор вида оборудования")
+    @NotNull(groups = {Copy.class}, message = "equipmentLibraryId should not be null")
     private Long equipmentLibraryId;
-    @Schema(description = "Добавить путем копирования сохраненного оборудования")
-    @NotNull(message = "copy should not be null")
-    private Boolean copy;
 }

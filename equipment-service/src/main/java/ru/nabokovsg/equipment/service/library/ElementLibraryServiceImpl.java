@@ -9,14 +9,9 @@ import ru.nabokovsg.equipment.exceptions.BadRequestException;
 import ru.nabokovsg.equipment.exceptions.NotFoundException;
 import ru.nabokovsg.equipment.mapper.library.ElementLibraryMapper;
 import ru.nabokovsg.equipment.model.library.ElementLibrary;
-import ru.nabokovsg.equipment.model.library.EquipmentLibrary;
-import ru.nabokovsg.equipment.model.library.PartElementLibrary;
 import ru.nabokovsg.equipment.repository.library.ElementLibraryRepository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,47 +19,31 @@ public class ElementLibraryServiceImpl implements ElementLibraryService {
 
     private final ElementLibraryRepository repository;
     private final ElementLibraryMapper mapper;
-    private final EquipmentLibraryService equipmentTypeService;
-    private final PartElementLibraryService partElementLibraryService;
+    private final EquipmentLibraryService equipmentLibraryService;
+    private final UpdateNameService updateNameService;
 
     @Override
     public ResponseElementLibraryDto save(NewElementLibraryDto elementDto) {
-        if (repository.existsByEquipmentLibraryIdAndElementName(elementDto.getEquipmentId()
+        if (repository.existsByEquipmentLibraryIdAndElementName(elementDto.getEquipmentLibraryId()
                                                            , elementDto.getElementName())) {
             throw new BadRequestException(String.format("Element by equipmentTypeId=%s and elementName=%s is found"
-                                                                                    , elementDto.getEquipmentId()
+                                                                                    , elementDto.getEquipmentLibraryId()
                                                                                     , elementDto.getElementName()));
         }
         return mapper.mapToResponseElementLibraryDto(
                 repository.save(mapper.mapToElementLibrary(elementDto
-                                                       , equipmentTypeService.getById(elementDto.getEquipmentId()))));
+                                              , equipmentLibraryService.getById(elementDto.getEquipmentLibraryId()))));
     }
 
     @Override
     public ResponseElementLibraryDto update(UpdateElementLibraryDto elementDto) {
         if (repository.existsById(elementDto.getId())) {
-            return mapper.mapToResponseElementLibraryDto(
-                    repository.save(mapper.mapToUpdateElementLibrary(elementDto
-                                                        , equipmentTypeService.getById(elementDto.getEquipmentId())))
-            );
+            ElementLibrary elementLibrary = repository.save(mapper.mapToUpdateElementLibrary(elementDto
+                                              , equipmentLibraryService.getById(elementDto.getEquipmentLibraryId())));
+            updateNameService.updateElementName(elementLibrary);
+            return mapper.mapToResponseElementLibraryDto( elementLibrary);
         }
         throw new NotFoundException(String.format("ElementType with id=%s not found for update", elementDto.getId()));
-    }
-
-    @Override
-    public void copy(EquipmentLibrary equipmentLibrary, Set<ElementLibrary> elements) {
-        Map<String, Set<PartElementLibrary>> partsElement = new HashMap<>(elements.size());
-        elements.forEach(element -> partsElement.put(element.getElementName(), element.getPartsElement()));
-        List<ElementLibrary> elementsCopies = repository.saveAll(equipmentLibrary.getElements()
-                                                               .stream()
-                                                               .map(element -> mapper.mapToCopyElementLibrary(element
-                                                                                                   , equipmentLibrary))
-                                                               .toList());
-        elementsCopies.forEach(element -> {
-            if (element.getPartsElement() != null) {
-                partElementLibraryService.copy(element, partsElement.get(element.getElementName()));
-            }
-        });
     }
 
     @Override

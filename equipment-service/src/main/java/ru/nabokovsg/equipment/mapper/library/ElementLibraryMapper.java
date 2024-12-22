@@ -19,7 +19,5 @@ public interface ElementLibraryMapper {
 
     ResponseElementLibraryDto mapToResponseElementLibraryDto(ElementLibrary element);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "partsElement", ignore = true)
-    ElementLibrary mapToCopyElementLibrary(ElementLibrary element, EquipmentLibrary equipmentLibrary);
+
 }

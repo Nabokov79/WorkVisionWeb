@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.equipment.dto.equipmentLibrary.NewEquipmentLibraryDto;
 import ru.nabokovsg.equipment.dto.equipmentLibrary.ResponseEquipmentLibraryDto;
@@ -19,18 +20,16 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EquipmentLibraryServiceImpl implements EquipmentLibraryService {
 
     private final EquipmentLibraryRepository repository;
     private final EquipmentLibraryMapper mapper;
-    private final ElementLibraryService elementLibraryService;
     private final EntityManager em;
+    private final EquipmentCopyingService copyingService;
 
     @Override
     public ResponseEquipmentLibraryDto save(NewEquipmentLibraryDto equipmentDto) {
-        if (equipmentDto.getCopy()) {
-            return mapper.mapResponseEquipmentLibraryDto(copy(equipmentDto));
-        }
         EquipmentLibrary equipment = getByPredicate(equipmentDto);
         if (equipment == null) {
             return mapper.mapResponseEquipmentLibraryDto(repository.save(mapper.mapToEquipmentLibrary(equipmentDto)));
@@ -48,16 +47,12 @@ public class EquipmentLibraryServiceImpl implements EquipmentLibraryService {
                 String.format("Equipment library with id=%s not found for update", equipmentDto.getId()));
     }
 
-    private EquipmentLibrary copy(NewEquipmentLibraryDto equipmentDto) {
-        if (equipmentDto.getEquipmentLibraryId() <= 0) {
-            throw new BadRequestException(
-                    String.format("Equipment library id should not be null and can only be positive" +
-                            "                    : equipmentLibraryId=%s", equipmentDto.getEquipmentLibraryId()));
-        }
-        EquipmentLibrary equipment = getById(equipmentDto.getEquipmentLibraryId());
-        EquipmentLibrary equipmentCopy = repository.save(mapper.mapToCopyEquipmentLibrary(equipment));
-        elementLibraryService.copy(equipmentCopy, equipment.getElements());
-        return equipmentCopy;
+    @Override
+    public ResponseEquipmentLibraryDto copy(NewEquipmentLibraryDto equipmentDto) {
+        EquipmentLibrary equipment = repository.save(mapper.mapToEquipmentLibrary(equipmentDto));
+        log.info(String.format("EquipmentLibrary : %s", equipment));
+        copyingService.copy(equipment, equipmentDto.getEquipmentLibraryId());
+        return mapper.mapResponseEquipmentLibraryDto(equipment);
     }
 
     @Override

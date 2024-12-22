@@ -21,9 +21,12 @@ public class ElementLibrary {
     private Long id;
     @Column(name = "element_name")
     private String elementName;
-    @OneToMany(mappedBy = "elementLibrary", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "elementLibrary",
+               orphanRemoval = true,
+               cascade = CascadeType.REMOVE,
+               fetch = FetchType.EAGER)
     private Set<PartElementLibrary> partsElement;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "equipment_id",  nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "equipment_id")
     private EquipmentLibrary equipmentLibrary;
 }
