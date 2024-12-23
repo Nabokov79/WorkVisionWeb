@@ -1,0 +1,15 @@
+package ru.nabokovsg.measurementqc.service.measurement;
+
+import ru.nabokovsg.equipmentDiagnosedQCL.model.measurement.CompletedRepairMeasurement;
+import ru.nabokovsg.equipmentDiagnosedQCL.model.measurement.IdentifiedDefectMeasurement;
+
+import java.util.Set;
+
+public interface MeasurementParameterValidateService {
+
+    IdentifiedDefectMeasurement searchIdentifiedDefectMeasurementDuplicate(IdentifiedDefectMeasurement identifiedDefect
+                                                                  , Set<IdentifiedDefectMeasurement> identifiedDefects);
+
+    CompletedRepairMeasurement searchCompletedRepairMeasurementDuplicate(CompletedRepairMeasurement completedRepair
+                                                                    , Set<CompletedRepairMeasurement> completedRepairs);
+}
