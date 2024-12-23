@@ -34,7 +34,7 @@ public class RemarkSpecialistServiceImpl implements RemarkSpecialistService {
                     .get(remarkDto.getPartElementId());
             mapper.mapWithEquipmentPartElement(remark, partElement);
         }
-        return mapper.mapToResponseRemarkSpecialistDto(remark);
+        return mapper.mapToResponseRemarkSpecialistDto(repository.save(remark));
     }
 
     @Override

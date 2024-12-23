@@ -13,10 +13,8 @@ public class ResponseRecommendationSpecialistDto {
 
     @Schema(description = "Идентификатор")
     private Long id;
-    @Schema(description = "Элемент оборудования")
-    private String elementName;
-    @Schema(description = "Подэлемент оборудования")
-    private String partElementName;
+    @Schema(description = "Идентификатор оборудования")
+    private Long equipmentId;
     @Schema(description = "Рекомендация")
     private String recommendation;
 }

@@ -2,6 +2,7 @@ package ru.nabokovsg.equipment.service.equipment;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.nabokovsg.equipment.exceptions.BadRequestException;
 import ru.nabokovsg.equipment.exceptions.NotFoundException;
 import ru.nabokovsg.equipment.mapper.equipment.EquipmentPartElementMapper;
 import ru.nabokovsg.equipment.model.equipment.*;
@@ -22,7 +23,7 @@ public class EquipmentPartElementServiceImpl implements EquipmentPartElementServ
     @Override
     public void save(EquipmentElement element, Long partElementLibraryId, String standardSize) {
         PartElementLibrary partElementLibrary = libraryService.getById(partElementLibraryId);
-        exists(element, partElementLibrary.getPartElementName(), standardSize);
+        exists(element.getPartsElement(), partElementLibrary.getPartElementName(), standardSize);
         EquipmentPartElement partElement = repository.save(mapper.mapToEquipmentPartElement(element
                                                                                           , partElementLibrary
                                                                                           , standardSize));
@@ -45,12 +46,12 @@ public class EquipmentPartElementServiceImpl implements EquipmentPartElementServ
         repository.save(parts.get(0));
     }
 
-    private void exists(EquipmentElement element, String partElementName, String standardSize) {
-        if (element.getPartsElement() != null) {
-            element.getPartsElement().forEach(partElement -> {
+    private void exists(Set<EquipmentPartElement> partsElement, String partElementName, String standardSize) {
+        if (partsElement != null) {
+            partsElement.forEach(partElement -> {
                 if (partElement.getPartElementName().equals(partElementName)
                                                                && partElement.getStandardSize().equals(standardSize)) {
-                    throw new NotFoundException(
+                    throw new BadRequestException(
                             String.format("EquipmentPartElement partElementName=%s, standardSize=%s is found"
                                     , partElementName
                                     , standardSize));

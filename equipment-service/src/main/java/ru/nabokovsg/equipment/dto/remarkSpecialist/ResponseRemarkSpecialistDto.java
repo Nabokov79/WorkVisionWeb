@@ -15,10 +15,12 @@ public class ResponseRemarkSpecialistDto {
 
     @Schema(description = "Идентификатор")
     private Long id;
-    @Schema(description = "Наименование элемента")
-    private String elementName;
-    @Schema(description = "Наименование подэлемента")
-    private String partElementName;
+    @Schema(description = "Идентификатор оборудования")
+    private Long equipmentId;
+    @Schema(description = "Идентификатор элемента")
+    private Long elementId;
+    @Schema(description = "Идентификатор подэлемента")
+    private Long partElementId;
     @Schema(description = "Замечание по техническому состоянию")
     private String remark;
 }

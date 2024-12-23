@@ -18,6 +18,10 @@ public class UpdateRecommendationSpecialistDto {
     @NotNull(message = "id should not be null")
     @Positive(message = "id can only be positive")
     private Long id;
+    @Schema(description = "Идентификатор оборудования")
+    @NotNull(message = "equipmentId should not be null")
+    @Positive(message = "equipmentId can only be positive")
+    private Long equipmentId;
     @Schema(description = "Рекомендация")
     @NotBlank(message = "recommendation should not be blank")
     private String recommendation;

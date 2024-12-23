@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.nabokovsg.equipment.dto.equipmentElement.NewEquipmentElementDto;
 import ru.nabokovsg.equipment.dto.equipmentElement.ResponseEquipmentElementDto;
 import ru.nabokovsg.equipment.dto.equipmentElement.UpdateEquipmentElementDto;
+import ru.nabokovsg.equipment.exceptions.BadRequestException;
 import ru.nabokovsg.equipment.exceptions.NotFoundException;
 import ru.nabokovsg.equipment.mapper.equipment.EquipmentElementMapper;
 import ru.nabokovsg.equipment.model.equipment.EquipmentElement;
@@ -36,7 +37,7 @@ public class EquipmentElementServiceImpl implements EquipmentElementService {
             }
             element = repository.save(element);
         } else if (elementDto.getPartElementLibraryId() == null){
-            throw new NotFoundException(String.format("Equipment element: %s; is found", elementDto));
+            throw new BadRequestException(String.format("Equipment element: %s; is found", elementDto));
         }
         if (elementDto.getPartElementLibraryId() != null) {
             partElementService.save(element, elementDto.getPartElementLibraryId(), standardSize);

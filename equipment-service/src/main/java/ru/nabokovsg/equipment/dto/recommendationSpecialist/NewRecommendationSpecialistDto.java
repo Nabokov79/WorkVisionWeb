@@ -20,12 +20,6 @@ public class NewRecommendationSpecialistDto {
     @NotNull(message = "equipmentId should not be null")
     @Positive(message = "equipmentId can only be positive")
     private Long equipmentId;
-    @Schema(description = "Идентификатор элемента")
-    @NotNull(message = "elementId should not be null")
-    @Positive(message = "elementId can only be positive")
-    private Long elementId;
-    @Schema(description = "Идентификатор подэлемента")
-    private Long partElementId;
     @Schema(description = "Рекомендация")
     @NotBlank(message = "recommendation should not be blank")
     private String recommendation;

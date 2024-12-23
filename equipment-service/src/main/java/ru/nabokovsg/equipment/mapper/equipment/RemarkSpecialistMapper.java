@@ -27,7 +27,6 @@ public interface RemarkSpecialistMapper {
     void mapWithEquipmentPartElement(@MappingTarget RemarkSpecialist remarkSpecialist, EquipmentPartElement partElement);
 
     @Mapping(source = "remark", target = "remark")
-    @Mapping(target = "id", ignore = true)
     RemarkSpecialist mapToUpdateRemarkByEquipment(@MappingTarget RemarkSpecialist remarkSpecialist, String remark);
 
     ResponseRemarkSpecialistDto mapToResponseRemarkSpecialistDto(RemarkSpecialist remarkSpecialist);

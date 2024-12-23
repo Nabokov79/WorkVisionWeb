@@ -57,6 +57,6 @@ public class RecommendationSpecialistController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable @NotNull @Positive @Parameter(name = "Идентификатор") Long id) {
         service.delete(id);
-        return ResponseEntity.ok("Рекомендация успешно удалены.");
+        return ResponseEntity.ok("Рекомендация успешно удалена.");
     }
 }
