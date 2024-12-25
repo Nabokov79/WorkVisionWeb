@@ -1,0 +1,24 @@
+springdoc:
+  swagger-ui:
+    path: /swagger-ui-document-qc-service.html
+
+server:
+  port: 8086
+
+spring:
+  application:
+    name: document-qc-service
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: none
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: mywords
+  sql:
+    init:
+      mode: always
