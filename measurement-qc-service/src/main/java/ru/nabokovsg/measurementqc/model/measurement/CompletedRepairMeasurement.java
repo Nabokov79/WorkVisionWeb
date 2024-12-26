@@ -19,10 +19,10 @@ public class CompletedRepairMeasurement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "repair_id")
+    private Long repairLibraryId;
     @Column(name = "equipment_id")
     private Long equipmentId;
-    @Column(name = "repair_id")
-    private Long repairId;
     @Column(name = "repair_name")
     private String repairName;
     @Column(name = "element_id")

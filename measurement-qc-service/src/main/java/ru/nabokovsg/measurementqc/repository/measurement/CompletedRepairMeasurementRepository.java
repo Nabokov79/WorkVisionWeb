@@ -9,12 +9,12 @@ public interface CompletedRepairMeasurementRepository extends JpaRepository<Comp
 
     Set<CompletedRepairMeasurement> findAllByEquipmentId(Long equipmentId);
 
-    Set<CompletedRepairMeasurement> findAllByEquipmentIdAndElementIdAndRepairId(Long equipmentId
+    Set<CompletedRepairMeasurement> findAllByEquipmentIdAndElementIdAndRepairLibraryId(Long equipmentId
                                                                               , Long elementId
-                                                                              , Long repairId);
+                                                                              , Long repairLibraryId);
 
-    Set<CompletedRepairMeasurement> findAllByEquipmentIdAndElementIdAndPartElementIdAndRepairId(Long equipmentId
+    Set<CompletedRepairMeasurement> findAllByEquipmentIdAndElementIdAndPartElementIdAndRepairLibraryId(Long equipmentId
                                                                                               , Long elementId
                                                                                               , Long partElementId
-                                                                                              , Long repairId);
+                                                                                              , Long repairLibraryId);
 }

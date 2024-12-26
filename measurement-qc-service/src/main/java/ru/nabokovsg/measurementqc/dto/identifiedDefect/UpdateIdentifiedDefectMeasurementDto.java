@@ -21,14 +21,6 @@ public class UpdateIdentifiedDefectMeasurementDto {
     @NotNull(message = "id should not be null")
     @Positive(message = "id can only be positive")
     private Long id;
-    @Schema(description = "Идентификатор диагностируемого оборудования")
-    private Long equipmentId;
-    @Schema(description = "Идентификатор элемента")
-    private Long elementId;
-    @Schema(description = "Идентификатор подэлемента")
-    private Long partElementId;
-    @Schema(description = "Идентификатор дефекта")
-    private Long defectId;
     @Schema(description = "Измеренные параметры дефекта элемента")
     private List<@Valid UpdateMeasuredParameterDto> measuredParameters;
 }

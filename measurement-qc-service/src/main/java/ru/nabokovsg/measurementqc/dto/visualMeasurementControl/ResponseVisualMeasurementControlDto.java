@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ru.nabokovsg.equipmentDiagnosedQCL.dto.measuredParameter.ResponseMeasuredParameterDto;
+import ru.nabokovsg.measurementqc.dto.measuredParameter.ResponseMeasuredParameterDto;
 
 import java.util.List;
 

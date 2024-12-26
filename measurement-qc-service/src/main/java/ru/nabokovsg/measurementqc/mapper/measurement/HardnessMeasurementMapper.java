@@ -3,11 +3,11 @@ package ru.nabokovsg.measurementqc.mapper.measurement;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import ru.nabokovsg.equipmentDiagnosedQCL.dto.hardnessMeasurement.HardnessMeasurementDto;
-import ru.nabokovsg.equipmentDiagnosedQCL.dto.hardnessMeasurement.ResponseElementHardnessMeasurementDto;
-import ru.nabokovsg.equipmentDiagnosedQCL.dto.ultrasonicResidualThicknessMeasurement.UltrasonicResidualThicknessMeasurementDto;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.equipment.EquipmentDiagnosedData;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.measurement.HardnessMeasurement;
+import ru.nabokovsg.measurementqc.dto.hardnessMeasurement.HardnessMeasurementDto;
+import ru.nabokovsg.measurementqc.dto.hardnessMeasurement.ResponseElementHardnessMeasurementDto;
+import ru.nabokovsg.measurementqc.dto.integration.EquipmentDto;
+import ru.nabokovsg.measurementqc.dto.ultrasonicResidualThicknessMeasurement.UltrasonicResidualThicknessMeasurementDto;
+import ru.nabokovsg.measurementqc.model.measurement.HardnessMeasurement;
 
 import java.time.LocalDate;
 
@@ -18,7 +18,7 @@ public interface HardnessMeasurementMapper {
     @Mapping(source = "measurementDto.elementId", target = "elementId")
     @Mapping(source = "measurementDto.partElementId", target = "partElementId")
     HardnessMeasurement mapToHardnessMeasurement(HardnessMeasurementDto measurementDto
-                                               , EquipmentDiagnosedData equipment
+                                               , EquipmentDto equipment
                                                , LocalDate measurementDate);
 
     @Mapping(target = "equipmentId", ignore = true)

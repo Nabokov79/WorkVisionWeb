@@ -5,7 +5,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.nabokovsg.measurementqc.dto.equipment.EquipmentDto;
+import ru.nabokovsg.measurementqc.dto.integration.AcceptableResidualThicknessDto;
+import ru.nabokovsg.measurementqc.dto.integration.EquipmentDto;
 import ru.nabokovsg.measurementqc.mapper.measurement.CalculationMeasuredResidualThicknessMapper;
 import ru.nabokovsg.measurementqc.model.measurement.*;
 import ru.nabokovsg.measurementqc.repository.measurement.UltrasonicResidualThicknessMeasurementRepository;
@@ -17,8 +18,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class CalculationMeasuredResidualThicknessServiceImpl implements CalculationMeasuredResidualThicknessService {
 
-    private final AcceptableResidualThicknessService acceptableThicknessService;
-    private final EquipmentElementService equipmentElementService;
     private final UltrasonicResidualThicknessMeasurementRepository repository;
     private final CalculationMeasuredResidualThicknessMapper mapper;
     private final EntityManager em;
@@ -26,7 +25,7 @@ public class CalculationMeasuredResidualThicknessServiceImpl implements Calculat
     @Override
     public void calculation(UltrasonicResidualThicknessMeasurement measurement
                           , EquipmentDto equipmentData
-                          , AcceptableResidualThickness acceptableThickness) {
+                          , AcceptableResidualThicknessDto acceptableThickness) {
         Double maxCorrosion = getMaxCorrosionValue(measurement.getElementId(), measurement.getPartElementId());
         double residualThickness = countResidualThickness(measurement.getMinMeasurementValue()
                 , maxCorrosion
@@ -37,12 +36,11 @@ public class CalculationMeasuredResidualThicknessServiceImpl implements Calculat
     }
 
     @Override
-    public void updateResidualThicknessMeasurementsEquipmentElements(IdentifiedDefectMeasurement identifiedDefect) {
-        EquipmentDto equipmentData =
-                equipmentElementService.getEquipmentDiagnosedData(identifiedDefect.getElementId());
-        AcceptableResidualThickness acceptableThickness = getAcceptableResidualThickness(identifiedDefect.getElementId());
+    public void updateResidualThicknessMeasurementsEquipmentElements(IdentifiedDefectMeasurement identifiedDefect
+                                                                , EquipmentDto equipment
+                                                                , AcceptableResidualThicknessDto acceptableThickness) {
         Set<UltrasonicResidualThicknessMeasurement> measurements;
-        if (equipmentData.getPartElementId() != null) {
+        if (equipment.getPartElementId() != null) {
             measurements = repository.findAllByElementIdAndPartElementId(identifiedDefect.getElementId()
                                                                        , identifiedDefect.getPartElementId());
         } else {
@@ -52,14 +50,9 @@ public class CalculationMeasuredResidualThicknessServiceImpl implements Calculat
             return;
         }
         measurements.forEach(measurement -> calculation(measurement
-                , equipmentData
+                , equipment
                 , acceptableThickness));
         repository.saveAll(measurements.stream().toList());
-    }
-
-    private AcceptableResidualThickness getAcceptableResidualThickness(Long elementId) {
-        return acceptableThicknessService.getByEquipmentDiagnosedData(
-                equipmentElementService.getEquipmentDiagnosedData(elementId));
     }
 
     private Double getMaxCorrosionValue(Long elementId, Long partElementId) {
@@ -81,7 +74,7 @@ public class CalculationMeasuredResidualThicknessServiceImpl implements Calculat
 
     private double countResidualThickness(Double minMeasurementValue
                                         , Double maxCorrosion
-                                        , AcceptableResidualThickness acceptableThickness) {
+                                        , AcceptableResidualThicknessDto acceptableThickness) {
         double residualThickness = minMeasurementValue;
         if (maxCorrosion != null) {
             residualThickness = minMeasurementValue - maxCorrosion;
@@ -96,7 +89,7 @@ public class CalculationMeasuredResidualThicknessServiceImpl implements Calculat
         return residualThickness;
     }
 
-    private double countMinAcceptableValue(AcceptableResidualThickness acceptableThickness
+    private double countMinAcceptableValue(AcceptableResidualThicknessDto acceptableThickness
                                          , EquipmentDto equipmentData) {
         if (acceptableThickness.getAcceptablePercent() != null) {
             return equipmentData.getThickness()
@@ -107,7 +100,7 @@ public class CalculationMeasuredResidualThicknessServiceImpl implements Calculat
     }
 
     private void setMeasurementStatus(UltrasonicResidualThicknessMeasurement measurement
-                                    , AcceptableResidualThickness acceptableThickness) {
+                                    , AcceptableResidualThicknessDto acceptableThickness) {
         if (getNoStandard(acceptableThickness)) {
             mapper.mapWithMeasurementStatus(measurement
                                           , MeasurementStatus.valueOf("NO_STANDARD").label
@@ -139,31 +132,31 @@ public class CalculationMeasuredResidualThicknessServiceImpl implements Calculat
         }
     }
 
-   private boolean getNoStandard(AcceptableResidualThickness acceptableThickness) {
+   private boolean getNoStandard(AcceptableResidualThicknessDto acceptableThickness) {
        return acceptableThickness == null;
    }
 
     private boolean getAcceptable(UltrasonicResidualThicknessMeasurement measurement
-                                , AcceptableResidualThickness acceptableThickness) {
+                                , AcceptableResidualThicknessDto acceptableThickness) {
         return measurement.getResidualThickness()
                 >= (acceptableThickness.getAcceptableThickness() + acceptableThickness.getMeasurementError());
     }
 
    private boolean getInvalid(UltrasonicResidualThicknessMeasurement measurement
-                            , AcceptableResidualThickness acceptableThickness) {
+                            , AcceptableResidualThicknessDto acceptableThickness) {
         return (measurement.getResidualThickness() + acceptableThickness.getMeasurementError())
                                                                         < acceptableThickness.getAcceptableThickness();
     }
 
     private boolean getApproachingInvalid(UltrasonicResidualThicknessMeasurement measurement
-                                        , AcceptableResidualThickness acceptableThickness) {
+                                        , AcceptableResidualThicknessDto acceptableThickness) {
         return (measurement.getResidualThickness() > acceptableThickness.getAcceptableThickness())
                 && (acceptableThickness.getAcceptableThickness() + acceptableThickness.getMeasurementError())
                                                                                 > measurement.getResidualThickness();
     }
 
     private boolean getReachedInvalid(UltrasonicResidualThicknessMeasurement measurement
-                                    , AcceptableResidualThickness acceptableThickness) {
+                                    , AcceptableResidualThicknessDto acceptableThickness) {
         boolean reachedInvalid = Objects.equals(measurement.getResidualThickness()
                                               , acceptableThickness.getAcceptableThickness());
         if (!reachedInvalid) {

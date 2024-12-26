@@ -2,8 +2,11 @@ package ru.nabokovsg.measurementqc.service.measurement;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.nabokovsg.measurementqc.client.MeasurementQCClient;
 import ru.nabokovsg.measurementqc.dto.hardnessMeasurement.HardnessMeasurementDto;
 import ru.nabokovsg.measurementqc.dto.hardnessMeasurement.ResponseElementHardnessMeasurementDto;
+import ru.nabokovsg.measurementqc.dto.integration.AcceptableMetalHardnessDto;
+import ru.nabokovsg.measurementqc.dto.integration.EquipmentDto;
 import ru.nabokovsg.measurementqc.exceptions.BadRequestException;
 import ru.nabokovsg.measurementqc.exceptions.NotFoundException;
 import ru.nabokovsg.measurementqc.mapper.measurement.HardnessMeasurementMapper;
@@ -21,22 +24,21 @@ public class HardnessMeasurementServiceImpl implements HardnessMeasurementServic
 
     private final HardnessMeasurementRepository repository;
     private final HardnessMeasurementMapper mapper;
-    private final AcceptableMetalHardnessService acceptableHardnessService;
     private final CalculationHardnessMeasurementService calculationService;
     private final UltrasonicResidualThicknessMeasurementService residualThicknessMeasurementService;
-    private final EquipmentElementService equipmentElementService;
+    private final MeasurementQCClient client;
 
     @Override
     public ResponseElementHardnessMeasurementDto save(HardnessMeasurementDto measurementDto) {
         HardnessMeasurement measurement = getDuplicate(measurementDto);
-        EquipmentDiagnosedData elementData = equipmentElementService.getEquipmentDiagnosedData(measurementDto.getElementId());
-        AcceptableMetalHardness acceptableHardness = acceptableHardnessService.getByPredicate(elementData);
+        EquipmentDto equipment = client.getEquipmentData(measurementDto.getElementId(), measurementDto.getPartElementId());
+        AcceptableMetalHardnessDto acceptableHardness = client.getAcceptableMetalHardness(equipment);
         if (measurement == null) {
-            measurement = mapper.mapToHardnessMeasurement(measurementDto, elementData, LocalDate.now());
+            measurement = mapper.mapToHardnessMeasurement(measurementDto, equipment, LocalDate.now());
         } else {
             update(measurement, measurementDto);
         }
-        validateMeasurement(elementData, measurement, acceptableHardness);
+        validateMeasurement(equipment, measurement, acceptableHardness);
         calculationService.setMeasurementStatus(measurement, acceptableHardness);
         return mapper.mapToResponseHardnessMeasurementDto(repository.save(measurement));
     }
@@ -92,14 +94,14 @@ public class HardnessMeasurementServiceImpl implements HardnessMeasurementServic
                                                                           , measurementDto.getMeasurementNumber());
     }
 
-    private void validateMeasurement(EquipmentDiagnosedData elementData
+    private void validateMeasurement(EquipmentDto equipment
                                    , HardnessMeasurement measurement
-                                   , AcceptableMetalHardness acceptableHardness) {
+                                   , AcceptableMetalHardnessDto acceptableHardness) {
         UltrasonicResidualThicknessMeasurement residualThickness =
                 residualThicknessMeasurementService.getByPredicateData(
                         mapper.mepToUltrasonicThicknessMeasurementDto(measurement));
-        if (elementData.getPartElementId() == null) {
-            if ((elementData.getMinDiameter() <= acceptableHardness.getMinAcceptableDiameter())
+        if (equipment.getPartElementId() == null) {
+            if ((equipment.getMinDiameter() <= acceptableHardness.getMinAcceptableDiameter())
                     || (residualThickness.getMinMeasurementValue() <= acceptableHardness.getMinAcceptableThickness())) {
                 throw new BadRequestException(
                         String.format("The values of the element's standard size and residual thickness"

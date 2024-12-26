@@ -3,6 +3,7 @@ package ru.nabokovsg.measurementqc.mapper.measurement;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import ru.nabokovsg.measurementqc.dto.integration.EquipmentDto;
 import ru.nabokovsg.measurementqc.dto.ultrasonicResidualThicknessMeasurement.ResponseUltrasonicResidualThicknessMeasurementDto;
 import ru.nabokovsg.measurementqc.dto.ultrasonicResidualThicknessMeasurement.UltrasonicResidualThicknessMeasurementDto;
 import ru.nabokovsg.measurementqc.model.measurement.UltrasonicResidualThicknessMeasurement;
@@ -16,7 +17,7 @@ public interface UltrasonicResidualThicknessMeasurementMapper {
     @Mapping(source = "measurementDto.elementId", target = "elementId")
     @Mapping(source = "measurementDto.partElementId", target = "partElementId")
     UltrasonicResidualThicknessMeasurement mapToUltrasonicResidualThicknessMeasurement(
-                                                               EquipmentDiagnosedData equipmentData
+                                                               EquipmentDto equipment
                                                              , UltrasonicResidualThicknessMeasurementDto measurementDto
                                                              , LocalDate measurementDate);
 

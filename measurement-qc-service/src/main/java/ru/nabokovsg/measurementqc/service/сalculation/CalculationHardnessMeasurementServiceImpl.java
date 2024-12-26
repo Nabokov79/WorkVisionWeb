@@ -2,6 +2,7 @@ package ru.nabokovsg.measurementqc.service.сalculation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.nabokovsg.measurementqc.dto.integration.AcceptableMetalHardnessDto;
 import ru.nabokovsg.measurementqc.mapper.measurement.CalculationHardnessMeasurementMapper;
 import ru.nabokovsg.measurementqc.model.measurement.HardnessMeasurement;
 import ru.nabokovsg.measurementqc.model.measurement.MeasurementStatus;
@@ -21,8 +22,8 @@ public class CalculationHardnessMeasurementServiceImpl implements CalculationHar
     }
 
     @Override
-    public void setMeasurementStatus(HardnessMeasurement measurement, AcceptableMetalHardness acceptableHardness) {
-        if (validateAcceptableMetalHardness(acceptableHardness)) {
+    public void setMeasurementStatus(HardnessMeasurement measurement, AcceptableMetalHardnessDto acceptableHardness) {
+        if (acceptableHardness == null) {
             mapper.mapWithMeasurementStatus(measurement
                                           , MeasurementStatus.valueOf("NO_STANDARD").label
                                           , "NO_STANDARD");
@@ -43,12 +44,8 @@ public class CalculationHardnessMeasurementServiceImpl implements CalculationHar
         }
     }
 
-   private boolean validateAcceptableMetalHardness(AcceptableMetalHardness acceptableHardness) {
-        return acceptableHardness == null;
-    }
-
     private boolean compareMinAcceptable(HardnessMeasurement measurement
-                                       , AcceptableMetalHardness acceptableHardness
+                                       , AcceptableMetalHardnessDto acceptableHardness
                                        , boolean flag) {
         if (flag) {
             return measurement.getMeasurementValue() >= acceptableHardness.getMinAcceptableHardness();
@@ -57,7 +54,7 @@ public class CalculationHardnessMeasurementServiceImpl implements CalculationHar
     }
 
     private boolean compareMaxAcceptable(HardnessMeasurement measurement
-                                       , AcceptableMetalHardness acceptableHardness
+                                       , AcceptableMetalHardnessDto acceptableHardness
                                        , boolean flag) {
         if (flag) {
             return measurement.getMeasurementValue() <= acceptableHardness.getMaxAcceptableHardness();

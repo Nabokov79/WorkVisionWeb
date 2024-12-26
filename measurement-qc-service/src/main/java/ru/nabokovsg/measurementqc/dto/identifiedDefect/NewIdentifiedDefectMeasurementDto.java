@@ -32,7 +32,7 @@ public class NewIdentifiedDefectMeasurementDto {
     @Schema(description = "Идентификатор дефекта")
     @NotNull(message = "defectId should not be null")
     @Positive(message = "defectId can only be positive")
-    private Long defectId;
+    private Long defectLibraryId;
     @Schema(description = "Параметры дефекта элемента")
     private List<@Valid NewMeasuredParameterDto> measuredParameters;
 }

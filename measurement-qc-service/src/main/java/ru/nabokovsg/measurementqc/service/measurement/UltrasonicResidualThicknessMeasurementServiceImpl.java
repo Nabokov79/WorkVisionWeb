@@ -2,6 +2,9 @@ package ru.nabokovsg.measurementqc.service.measurement;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.nabokovsg.measurementqc.client.MeasurementQCClient;
+import ru.nabokovsg.measurementqc.dto.integration.AcceptableResidualThicknessDto;
+import ru.nabokovsg.measurementqc.dto.integration.EquipmentDto;
 import ru.nabokovsg.measurementqc.dto.ultrasonicResidualThicknessMeasurement.ResponseUltrasonicResidualThicknessMeasurementDto;
 import ru.nabokovsg.measurementqc.dto.ultrasonicResidualThicknessMeasurement.UltrasonicResidualThicknessMeasurementDto;
 import ru.nabokovsg.measurementqc.exceptions.NotFoundException;
@@ -21,25 +24,20 @@ public class UltrasonicResidualThicknessMeasurementServiceImpl implements Ultras
     private final UltrasonicResidualThicknessMeasurementRepository repository;
     private final UltrasonicResidualThicknessMeasurementMapper mapper;
     private final CalculationMeasuredResidualThicknessService calculationService;
-    private final AcceptableResidualThicknessService acceptableThicknessService;
-    private final EquipmentElementService equipmentElementService;
     private final CalculationIdentifiedDefectMeasurementService measurementResultsUpdateService;
+    private final MeasurementQCClient client;
 
     @Override
     public ResponseUltrasonicResidualThicknessMeasurementDto save(UltrasonicResidualThicknessMeasurementDto measurementDto) {
         UltrasonicResidualThicknessMeasurement measurement = getByPredicateData(measurementDto);
-        EquipmentDiagnosedData equipmentData
-                                     = equipmentElementService.getEquipmentDiagnosedData(measurementDto.getElementId());
-        AcceptableResidualThickness acceptableThickness
-                                               = acceptableThicknessService.getByEquipmentDiagnosedData(equipmentData);
+        EquipmentDto equipment = client.getEquipmentData(measurementDto.getElementId(), measurementDto.getPartElementId());
+        AcceptableResidualThicknessDto acceptableThickness = client.getAcceptableResidualThickness(equipment);
         if (measurement == null) {
-            measurement = mapper.mapToUltrasonicResidualThicknessMeasurement(equipmentData
-                    , measurementDto
-                    , LocalDate.now());
+            measurement = mapper.mapToUltrasonicResidualThicknessMeasurement(equipment, measurementDto, LocalDate.now());
         } else {
             update(measurement, measurementDto);
         }
-        calculationService.calculation(measurement, equipmentData, acceptableThickness);
+        calculationService.calculation(measurement, equipment, acceptableThickness);
         measurementResultsUpdateService.updateUnacceptableByResidualThickness(measurement, acceptableThickness);
         return mapper.mapToResponseUltrasonicThicknessMeasurementDto(repository.save(measurement));
     }
@@ -72,12 +70,12 @@ public class UltrasonicResidualThicknessMeasurementServiceImpl implements Ultras
 
     @Override
     public void delete(Long id) {
-        UltrasonicResidualThicknessMeasurement measurement = getById(id);
-        repository.deleteById(id);
-        EquipmentDiagnosedData equipmentData =
-                                        equipmentElementService.getEquipmentDiagnosedData(measurement.getElementId());
-        measurementResultsUpdateService.updateUnacceptableByResidualThickness(measurement
-                                               , acceptableThicknessService.getByEquipmentDiagnosedData(equipmentData));
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return;
+        }
+        throw new NotFoundException(
+                String.format("Ultrasonic residual thickness measurement with id=%s not found for delete", id));
     }
 
     @Override

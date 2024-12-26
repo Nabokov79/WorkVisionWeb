@@ -3,11 +3,11 @@ package ru.nabokovsg.measurementqc.mapper.measurement;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.library.MeasurementParameterLibrary;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.measurement.CompletedRepairMeasurement;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.measurement.IdentifiedDefectMeasurement;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.measurement.MeasuredParameter;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.qualityControl.VisualMeasurementControl;
+import ru.nabokovsg.measurementqc.dto.integration.MeasurementParameterLibraryDto;
+import ru.nabokovsg.measurementqc.model.measurement.CompletedRepairMeasurement;
+import ru.nabokovsg.measurementqc.model.measurement.IdentifiedDefectMeasurement;
+import ru.nabokovsg.measurementqc.model.measurement.MeasuredParameter;
+import ru.nabokovsg.measurementqc.model.qualityControl.VisualMeasurementControl;
 
 @Mapper(componentModel = "spring")
 public interface MeasuredParameterMapper {
@@ -18,7 +18,7 @@ public interface MeasuredParameterMapper {
     @Mapping(source = "value", target = "value")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "completedRepair", ignore = true)
-    MeasuredParameter mapWithIdentifiedDefect(MeasurementParameterLibrary parameterLibrary
+    MeasuredParameter mapWithIdentifiedDefect(MeasurementParameterLibraryDto parameterLibrary
                                             , Double value
                                             , IdentifiedDefectMeasurement identifiedDefect);
 
@@ -29,7 +29,7 @@ public interface MeasuredParameterMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "identifiedDefect", ignore = true)
     @Mapping(target = "completedRepair", ignore = true)
-    MeasuredParameter mapWithDefect(MeasurementParameterLibrary parameterLibrary
+    MeasuredParameter mapWithDefect(MeasurementParameterLibraryDto parameterLibrary
                                   , Double value
                                   , VisualMeasurementControl defect);
 
@@ -40,7 +40,7 @@ public interface MeasuredParameterMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "identifiedDefect", ignore = true)
     @Mapping(target = "visualMeasurementControl", ignore = true)
-    MeasuredParameter mapWithCompletedRepair(MeasurementParameterLibrary parameterLibrary
+    MeasuredParameter mapWithCompletedRepair(MeasurementParameterLibraryDto parameterLibrary
                                            , Double value
                                            , CompletedRepairMeasurement repair);
 

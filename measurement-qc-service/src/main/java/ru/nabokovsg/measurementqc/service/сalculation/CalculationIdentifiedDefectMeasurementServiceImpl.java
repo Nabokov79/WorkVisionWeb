@@ -5,6 +5,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.nabokovsg.measurementqc.dto.integration.AcceptableResidualThicknessDto;
+import ru.nabokovsg.measurementqc.dto.integration.LibraryDto;
+import ru.nabokovsg.measurementqc.dto.integration.MeasurementParameterLibraryDto;
 import ru.nabokovsg.measurementqc.mapper.measurement.MeasurementResultsUpdateMapper;
 import ru.nabokovsg.measurementqc.model.measurement.*;
 import ru.nabokovsg.measurementqc.repository.measurement.IdentifiedDefectMeasurementRepository;
@@ -19,14 +22,11 @@ public class CalculationIdentifiedDefectMeasurementServiceImpl implements Calcul
 
     private final IdentifiedDefectMeasurementRepository repository;
     private final MeasurementResultsUpdateMapper mapper;
-    private final AcceptableResidualThicknessService acceptableThicknessService;
-    private final EquipmentElementService equipmentElementService;
     private final EntityManager em;
 
 
     @Override
-    public void calculateByResidualThickness(IdentifiedDefectMeasurement identifiedDefect) {
-        AcceptableResidualThickness acceptableThickness = getAcceptableResidualThickness(identifiedDefect.getElementId());
+    public void calculateByResidualThickness(IdentifiedDefectMeasurement identifiedDefect, AcceptableResidualThicknessDto acceptableThickness) {
         Double minResidualThickness = getMinResidualThickness(identifiedDefect.getElementId(), identifiedDefect.getPartElementId());
         if (minResidualThickness == null) {
             mapper.mapWithQualityAssessment(identifiedDefect, null, MeasurementStatus.valueOf("NO_RESIDUAL_THICKNESS").label);
@@ -37,7 +37,7 @@ public class CalculationIdentifiedDefectMeasurementServiceImpl implements Calcul
 
     @Override
     public void updateUnacceptableByResidualThickness(UltrasonicResidualThicknessMeasurement measurement
-            , AcceptableResidualThickness acceptableThickness) {
+            , AcceptableResidualThicknessDto acceptableThickness) {
         Double minMeasurementValue = getMinResidualThickness(measurement.getElementId(), measurement.getPartElementId());
         List<IdentifiedDefectMeasurement> identifiedDefects = getAllIdentifiedDefectMeasurement(measurement);
         identifiedDefects.forEach(defect -> setUnacceptableDefectByResidualThickness(defect
@@ -47,13 +47,13 @@ public class CalculationIdentifiedDefectMeasurementServiceImpl implements Calcul
     }
 
     @Override
-    public void calculateByMaxAllowedValue(DefectLibrary typeDefectLibrary
+    public void calculateByMaxAllowedValue(LibraryDto defectLibrary
             , IdentifiedDefectMeasurement identifiedDefect
             , Map<Long, Double> measurementValues) {
-        Map<Long, Double> maxAllowedValues = typeDefectLibrary.getMeasuredParameters()
+        Map<Long, Double> maxAllowedValues = defectLibrary.getMeasuredParameters()
                 .stream()
-                .collect(Collectors.toMap(MeasurementParameterLibrary::getId
-                        , MeasurementParameterLibrary::getMaxAllowedValue));
+                .collect(Collectors.toMap(MeasurementParameterLibraryDto::getId
+                        , MeasurementParameterLibraryDto::getMaxAllowedValue));
         measurementValues.forEach((k, v) -> setQualityAssessment(identifiedDefect, maxAllowedValues.get(k), v));
     }
 
@@ -83,7 +83,7 @@ public class CalculationIdentifiedDefectMeasurementServiceImpl implements Calcul
 
     private void setUnacceptableDefectByResidualThickness(IdentifiedDefectMeasurement identifiedDefect
             , double minResidualThickness
-            , AcceptableResidualThickness acceptableThickness) {
+            , AcceptableResidualThicknessDto acceptableThickness) {
         String depth = MeasurementParameterType.valueOf("DEPTH").label;
         MeasuredParameter parameter = identifiedDefect.getMeasuredParameters().stream()
                 .collect(Collectors.toMap(MeasuredParameter::getParameterName, p -> p))
@@ -119,10 +119,5 @@ public class CalculationIdentifiedDefectMeasurementServiceImpl implements Calcul
                 .from(identifiedDefect)
                 .where(builder)
                 .fetch();
-    }
-
-    private AcceptableResidualThickness getAcceptableResidualThickness(Long elementId) {
-        return acceptableThicknessService.getByEquipmentDiagnosedData(
-                equipmentElementService.getEquipmentDiagnosedData(elementId));
     }
 }

@@ -2,11 +2,15 @@ package ru.nabokovsg.measurementqc.service.measurement;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.nabokovsg.measurementqc.client.MeasurementQCClient;
 import ru.nabokovsg.measurementqc.dto.completedRepairMeasurement.NewCompletedRepairMeasurementDto;
 import ru.nabokovsg.measurementqc.dto.completedRepairMeasurement.ResponseCompletedRepairMeasurementDto;
 import ru.nabokovsg.measurementqc.dto.completedRepairMeasurement.UpdateCompletedRepairMeasurementDto;
+import ru.nabokovsg.measurementqc.dto.integration.LibraryDto;
+import ru.nabokovsg.measurementqc.exceptions.NotFoundException;
 import ru.nabokovsg.measurementqc.mapper.measurement.CompletedRepairMeasurementMapper;
 import ru.nabokovsg.measurementqc.model.measurement.CompletedRepairMeasurement;
+import ru.nabokovsg.measurementqc.model.measurement.LibraryDataType;
 import ru.nabokovsg.measurementqc.model.measurement.ParameterMeasurementBuilder;
 import ru.nabokovsg.measurementqc.repository.measurement.CompletedRepairMeasurementRepository;
 
@@ -20,27 +24,25 @@ public class CompletedRepairMeasurementServiceImpl implements CompletedRepairMea
 
     private final CompletedRepairMeasurementRepository repository;
     private final CompletedRepairMeasurementMapper mapper;
-    private final RepairLibraryService repairLibraryService;
     private final MeasuredParameterService measuredParameterService;
-    private final EquipmentElementService equipmentElementService;
     private final MeasurementParameterValidateService validateService;
+    private final MeasurementQCClient client;
 
     @Override
     public ResponseCompletedRepairMeasurementDto save(NewCompletedRepairMeasurementDto repairDto) {
         CompletedRepairMeasurement repair = mapper.mapToCompletedRepair(repairDto);
-        RepairLibrary typeRepairLibrary = repairLibraryService.getById(repairDto.getRepairId());
         repair = validateService.searchCompletedRepairMeasurementDuplicate(repair, getAllByPredicate(repair));
         if (repair.getId() == null) {
-            mapper.mapWitEquipmentDiagnosedData(repair
-                                        , typeRepairLibrary
-                                        , equipmentElementService.getEquipmentDiagnosedData(repairDto.getElementId()));
+            LibraryDto repairLibrary = client.getLibraryData(repairDto.getRepairLibraryId(), LibraryDataType.REPAIR);
+            mapper.mapWitEquipmentData(repair
+                                     , repairLibrary
+                                     , client.getEquipmentData(repairDto.getElementId(), repairDto.getPartElementId()));
             repair = repository.save(repair);
             repair.setMeasuredParameters(measuredParameterService.save(
                     new ParameterMeasurementBuilder.Builder()
                                                    .libraryDataType(LibraryDataType.REPAIR)
                                                    .completedRepair(repair)
-                                                   .measurementParameterLibraries(
-                                                           typeRepairLibrary.getMeasuredParameters())
+                                                   .measurementParameterLibraries(repairLibrary.getMeasuredParameters())
                                                    .newMeasuredParameters(repairDto.getMeasuredParameters())
                                                    .build()));
         } else {
@@ -80,25 +82,28 @@ public class CompletedRepairMeasurementServiceImpl implements CompletedRepairMea
 
     @Override
     public void delete(Long id) {
-        measuredParameterService.deleteAll(LibraryDataType.REPAIR, id);
-        repository.deleteById(id);
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return;
+        }
+        throw new NotFoundException(String.format("CompletedRepair with id=%s not found for delete", id));
     }
 
     private CompletedRepairMeasurement getById(Long id) {
         return repository.findById(id)
-            .orElseThrow(() -> new NotFoundException(String.format("CompletedRepair defect with id=%s not found", id)));
+            .orElseThrow(() -> new NotFoundException(String.format("CompletedRepair with id=%s not found", id)));
     }
 
     private Set<CompletedRepairMeasurement> getAllByPredicate(CompletedRepairMeasurement repair) {
         if (repair.getPartElementId() != null) {
-            return repository.findAllByEquipmentIdAndElementIdAndPartElementIdAndRepairId(repair.getEquipmentId()
+            return repository.findAllByEquipmentIdAndElementIdAndPartElementIdAndRepairLibraryId(repair.getEquipmentId()
                                                                                         , repair.getElementId()
                                                                                         , repair.getPartElementId()
-                                                                                        , repair.getRepairId());
+                                                                                        , repair.getRepairLibraryId());
         } else {
-            return repository.findAllByEquipmentIdAndElementIdAndRepairId(repair.getEquipmentId()
-                                                                        , repair.getElementId()
-                                                                        , repair.getRepairId());
+            return repository.findAllByEquipmentIdAndElementIdAndRepairLibraryId(repair.getEquipmentId()
+                                                                               , repair.getElementId()
+                                                                               , repair.getRepairLibraryId());
         }
     }
 }

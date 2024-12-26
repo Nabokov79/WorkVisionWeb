@@ -5,6 +5,7 @@ springdoc:
 server:
   port: 8085
 
+
 spring:
   application:
     name: measurement-qc-service

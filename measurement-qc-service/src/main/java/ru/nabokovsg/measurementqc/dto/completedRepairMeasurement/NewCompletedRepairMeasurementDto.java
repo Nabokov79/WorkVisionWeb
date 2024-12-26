@@ -32,7 +32,7 @@ public class NewCompletedRepairMeasurementDto {
     @Schema(description = "Идентификатор ремонта")
     @NotNull(message = "repairId should not be null")
     @Positive(message = "repairId can only be positive")
-    private Long repairId;
+    private Long repairLibraryId;
     @Schema(description = "Измеренные параметры выполненного ремонта элемента")
     private List<@Valid NewMeasuredParameterDto> measuredParameters;
 }

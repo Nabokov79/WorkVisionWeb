@@ -22,7 +22,7 @@ public class IdentifiedDefectMeasurement {
     @Column(name = "equipment_id")
     private Long equipmentId;
     @Column(name = "defect_id")
-    private Long defectId;
+    private Long defectLibraryId;
     @Column(name = "defect_name")
     private String defectName;
     @Column(name = "unacceptable")

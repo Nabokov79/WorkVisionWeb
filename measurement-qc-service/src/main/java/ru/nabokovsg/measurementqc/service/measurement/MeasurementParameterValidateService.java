@@ -1,7 +1,7 @@
 package ru.nabokovsg.measurementqc.service.measurement;
 
-import ru.nabokovsg.equipmentDiagnosedQCL.model.measurement.CompletedRepairMeasurement;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.measurement.IdentifiedDefectMeasurement;
+import ru.nabokovsg.measurementqc.model.measurement.CompletedRepairMeasurement;
+import ru.nabokovsg.measurementqc.model.measurement.IdentifiedDefectMeasurement;
 
 import java.util.Set;
 

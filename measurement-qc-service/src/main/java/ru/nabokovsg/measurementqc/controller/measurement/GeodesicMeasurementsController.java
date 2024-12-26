@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(
-        value = "/WorkVisionWeb/measurement/geodesy",
+        value = "/WorkVisionWeb/measurement/geodesy/qc",
         consumes = MediaType.ALL_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor

@@ -17,10 +17,6 @@ public class UpdateMeasuredParameterDto {
     @NotNull(message = "id should not be null")
     @Positive(message = "id can only be positive")
     private Long id;
-    @Schema(description = "Идентификатор параметра")
-    @NotNull(message = "parameterId should not be null")
-    @Positive(message = "parameterId can only be positive")
-    private Long parameterId;
     @Schema(description = "Значение параметра")
     @NotNull(message = "value should not be null")
     @Positive(message = "value can only be positive")

@@ -14,7 +14,7 @@ spring:
       - id: laboratory-qc-service
         uri: lb://laboratory-qc-service
         predicates:
-          - Path=/WorkVisionWeb/laboratory/qc/**
+          - Path=/WorkVisionWeb/laboratory/**
       - id: equipment-service
         uri: lb://equipment-service
         predicates:
@@ -26,11 +26,11 @@ spring:
       - id: measurement-qc-service
         uri: lb://measurement-qc-service
         predicates:
-          - Path=/WorkVisionWeb/measurement/qc/**
+          - Path=/WorkVisionWeb/measurement/**
       - id: document-qc-service
         uri: lb://document-qc-service
         predicates:
-          - Path=/WorkVisionWeb/document/qc/**
+          - Path=/WorkVisionWeb/document/**
       - id: document-template-service
         uri: lb://document-template-service
         predicates:

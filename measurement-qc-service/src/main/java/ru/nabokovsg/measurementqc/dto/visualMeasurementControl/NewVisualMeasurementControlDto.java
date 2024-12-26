@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.nabokovsg.equipmentDiagnosedQCL.dto.measuredParameter.NewMeasuredParameterDto;
 import ru.nabokovsg.measurementqc.dto.measuredParameter.NewMeasuredParameterDto;
 
 import java.util.List;
@@ -32,8 +31,8 @@ public class NewVisualMeasurementControlDto {
     @Schema(description = "Типоразмер соединяемых элементов")
     @NotBlank(message = "standardSize should not be blank")
     private String standardSize;
-    @Schema(description = "Идентификатор дефекта")
-    private Long defectId;
+    @Schema(description = "Идентификатор типа дефекта")
+    private Long defectLibraryId;
     @Schema(description = "Координаты расположения дефекта")
     private String coordinates;
     @Schema(description = "Оценка качества сварного соединения")

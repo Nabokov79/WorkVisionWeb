@@ -1,17 +1,17 @@
 package ru.nabokovsg.measurementqc.service.measurement;
 
-import org.springframework.stereotype.Component;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.library.MeasurementParameterType;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.measurement.CompletedRepairMeasurement;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.measurement.IdentifiedDefectMeasurement;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.measurement.MeasuredParameter;
+import org.springframework.stereotype.Service;
+import ru.nabokovsg.measurementqc.model.measurement.CompletedRepairMeasurement;
+import ru.nabokovsg.measurementqc.model.measurement.IdentifiedDefectMeasurement;
+import ru.nabokovsg.measurementqc.model.measurement.MeasuredParameter;
+import ru.nabokovsg.measurementqc.model.measurement.MeasurementParameterType;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class MeasurementParameterValidateServiceImpl implements MeasurementParameterValidateService {
 
     @Override

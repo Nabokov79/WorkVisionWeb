@@ -6,6 +6,8 @@ import org.mapstruct.MappingTarget;
 import ru.nabokovsg.measurementqc.dto.completedRepairMeasurement.NewCompletedRepairMeasurementDto;
 import ru.nabokovsg.measurementqc.dto.completedRepairMeasurement.ResponseCompletedRepairMeasurementDto;
 import ru.nabokovsg.measurementqc.dto.completedRepairMeasurement.UpdateCompletedRepairMeasurementDto;
+import ru.nabokovsg.measurementqc.dto.integration.EquipmentDto;
+import ru.nabokovsg.measurementqc.dto.integration.LibraryDto;
 import ru.nabokovsg.measurementqc.model.measurement.CompletedRepairMeasurement;
 
 @Mapper(componentModel = "spring")
@@ -15,16 +17,14 @@ public interface CompletedRepairMeasurementMapper {
 
     CompletedRepairMeasurement mapToUpdateCompletedRepair(UpdateCompletedRepairMeasurementDto repairDto);
 
-    @Mapping(source = "typeRepairLibrary.repairName", target = "repairName")
-    @Mapping(source = "diagnosedData.elementId", target = "elementId")
-    @Mapping(source = "diagnosedData.elementName", target = "elementName")
-    @Mapping(source = "diagnosedData.partElementId", target = "partElementId")
-    @Mapping(source = "diagnosedData.partElementName", target = "partElementName")
+    @Mapping(source = "repairLibrary.repairName", target = "repairName")
+    @Mapping(source = "equipmentDto.elementName", target = "elementName")
+    @Mapping(source = "equipmentDto.partElementName", target = "partElementName")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "measuredParameters", ignore = true)
-    void mapWitEquipmentDiagnosedData(@MappingTarget CompletedRepairMeasurement repair
-                                                   , RepairLibrary typeRepairLibrary
-                                                   , EquipmentDiagnosedData diagnosedData);
+    void mapWitEquipmentData(@MappingTarget CompletedRepairMeasurement repair
+                                          , LibraryDto repairLibrary
+                                          , EquipmentDto equipmentDto);
 
     ResponseCompletedRepairMeasurementDto mapToResponseCompletedRepairDto(CompletedRepairMeasurement repair);
 }

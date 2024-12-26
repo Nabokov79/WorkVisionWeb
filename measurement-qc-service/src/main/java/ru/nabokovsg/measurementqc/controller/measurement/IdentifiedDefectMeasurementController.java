@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(
-        value = "/WorkVisionWeb/measurement/defect",
+        value = "/WorkVisionWeb/measurement/defect/qc",
         consumes = MediaType.ALL_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor

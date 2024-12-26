@@ -9,12 +9,13 @@ public interface IdentifiedDefectMeasurementRepository extends JpaRepository<Ide
 
     Set<IdentifiedDefectMeasurement> findAllByEquipmentId(Long equipmentId);
 
-    Set<IdentifiedDefectMeasurement> findAllByEquipmentIdAndElementIdAndDefectId(Long equipmentId
-                                                                               , Long elementId
-                                                                               , Long defectId);
+    Set<IdentifiedDefectMeasurement> findAllByEquipmentIdAndElementIdAndDefectLibraryId(Long equipmentId
+                                                                                      , Long elementId
+                                                                                      , Long defectLibraryId);
 
-    Set<IdentifiedDefectMeasurement> findAllByEquipmentIdAndElementIdAndPartElementIdAndDefectId(Long equipmentId
+    Set<IdentifiedDefectMeasurement> findAllByEquipmentIdAndElementIdAndPartElementIdAndDefectLibraryId(
+                                                                                                 Long equipmentId
                                                                                                , Long elementId
                                                                                                , Long partElementId
-                                                                                               , Long defectId);
+                                                                                               , Long defectLibraryId);
 }

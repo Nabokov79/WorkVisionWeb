@@ -18,7 +18,7 @@ public class NewMeasuredParameterDto {
     @Schema(description = "Идентификатор параметра")
     @NotNull(message = "parameterId should not be null")
     @Positive(message = "parameterId can only be positive")
-    private Long parameterId;
+    private Long parameterLibraryId;
     @Schema(description = "Значение параметра")
     @NotNull(message = "value should not be null")
     @Positive(message = "value can only be positive")

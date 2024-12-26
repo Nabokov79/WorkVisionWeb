@@ -2,10 +2,17 @@ package ru.nabokovsg.measurementqc.service.qualityControl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.nabokovsg.measurementqc.client.MeasurementQCClient;
+import ru.nabokovsg.measurementqc.dto.integration.LibraryDto;
+import ru.nabokovsg.measurementqc.dto.integration.MeasurementParameterLibraryDto;
 import ru.nabokovsg.measurementqc.dto.visualMeasurementControl.NewVisualMeasurementControlDto;
 import ru.nabokovsg.measurementqc.dto.visualMeasurementControl.ResponseVisualMeasurementControlDto;
 import ru.nabokovsg.measurementqc.dto.visualMeasurementControl.UpdateVisualMeasurementControlDto;
+import ru.nabokovsg.measurementqc.exceptions.BadRequestException;
+import ru.nabokovsg.measurementqc.exceptions.NotFoundException;
 import ru.nabokovsg.measurementqc.mapper.qualityControl.VisualMeasurementControlMapper;
+import ru.nabokovsg.measurementqc.model.measurement.LibraryDataType;
+import ru.nabokovsg.measurementqc.model.measurement.ParameterMeasurementBuilder;
 import ru.nabokovsg.measurementqc.model.qualityControl.VisualMeasurementControl;
 import ru.nabokovsg.measurementqc.repository.qualityControl.VisualMeasurementControlRepository;
 import ru.nabokovsg.measurementqc.service.measurement.MeasuredParameterService;
@@ -18,24 +25,24 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
 
     private final VisualMeasurementControlRepository repository;
     private final VisualMeasurementControlMapper mapper;
-    private final DefectLibraryService defectLibraryService;
     private final MeasuredParameterService measuredParameterService;
+    private final MeasurementQCClient client;
 
     @Override
     public ResponseVisualMeasurementControlDto save(NewVisualMeasurementControlDto defectDto) {
         VisualMeasurementControl defect = mapper.mapToVisualMeasurementControl(defectDto);
-        DefectLibrary typeDefect = defectLibraryService.getById(defectDto.getDefectId());
-        if (defectDto.getDefectId() == null) {
+        if (defectDto.getDefectLibraryId() == null) {
             defect = saveWithPositiveQualityAssessment(defect);
         } else {
-            if (compareParameters(typeDefect)) {
+            LibraryDto defectLibrary = client.getLibraryData(defectDto.getDefectLibraryId(), LibraryDataType.DEFECT);
+            if (compareParameters(defectLibrary)) {
                 defect = saveWithOneMeasuredParameter(defect
                                              , mapper.mapToUpdateVisualMeasurementControlDto(defectDto)
-                                             , typeDefect.getMeasuredParameters());
+                                             , defectLibrary.getMeasuredParameters());
             } else {
                 defect = saveWithArbitraryNumberMeasuredParameter(defect
                                                          , mapper.mapToUpdateVisualMeasurementControlDto(defectDto)
-                                                         , typeDefect.getMeasuredParameters());
+                                                         , defectLibrary.getMeasuredParameters());
                                             }
         }
         return mapper.mapToResponseVisualMeasurementControlDto(defect);
@@ -44,19 +51,19 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
     @Override
     public ResponseVisualMeasurementControlDto update(UpdateVisualMeasurementControlDto defectDto) {
         VisualMeasurementControl defect = getById(defectDto.getId());
-        if (defectDto.getDefectId() == null) {
+        if (defectDto.getDefectLibraryId() == null) {
             defect = saveWithPositiveQualityAssessment(defect);
         } else {
-            DefectLibrary typeDefect = defectLibraryService.getById(defectDto.getDefectId());
-            if (compareParameters(typeDefect)) {
-                defect = saveWithOneMeasuredParameter(defect, defectDto, typeDefect.getMeasuredParameters());
+            LibraryDto defectLibrary = client.getLibraryData(defectDto.getDefectLibraryId(), LibraryDataType.DEFECT);
+            if (compareParameters(defectLibrary)) {
+                defect = saveWithOneMeasuredParameter(defect, defectDto, defectLibrary.getMeasuredParameters());
             } else {
                 defect.setMeasuredParameters(measuredParameterService.update(defect.getMeasuredParameters()
                                                                            , defectDto.getMeasuredParameters()));
             }
         }
-        if (defect.getMeasuredParameters() != null) {
-            measuredParameterService.deleteAll(LibraryDataType.DEFECT, defect.getId());
+        if (defectDto.getDefectLibraryId() == null) {
+            defect = saveWithPositiveQualityAssessment(defect);
         }
         return mapper.mapToResponseVisualMeasurementControlDto(defect);
     }
@@ -76,8 +83,11 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
 
     @Override
     public void delete(Long id) {
-        measuredParameterService.deleteAll(LibraryDataType.DEFECT, id);
-        repository.deleteById(id);
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return;
+        }
+        throw new NotFoundException(String.format("Identified defect with id=%s not found for delete", id));
     }
 
     private VisualMeasurementControl getById(Long id) {
@@ -86,17 +96,17 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
                                     String.format("Visual measurement control defect with id=%s not found", id)));
     }
 
-    private boolean compareParameters(DefectLibrary typeDefect) {
-        for (MeasurementParameterLibrary parameter : typeDefect.getMeasuredParameters()) {
-            if (parameter.getParameterName().equals(typeDefect.getDefectName())) {
+    private boolean compareParameters(LibraryDto defectLibrary) {
+        for (MeasurementParameterLibraryDto parameter : defectLibrary.getMeasuredParameters()) {
+            if (parameter.getParameterName().equals(defectLibrary.getDefectName())) {
                 return true;
             }
         }
         return false;
     }
 
-    private MeasurementParameterLibrary getTypeMeasurementParameterLibrary(
-                                                              Set<MeasurementParameterLibrary> parametersLibrary) {
+    private MeasurementParameterLibraryDto getTypeMeasurementParameterLibrary(
+                                                             List<MeasurementParameterLibraryDto> parametersLibrary) {
         if (parametersLibrary.size() > 1) {
             throw new BadRequestException(
                     String.format("The number of defect type parameters is more than one, size=%s"
@@ -104,7 +114,7 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
         }
         return parametersLibrary.stream().toList().get(0);
     }
-    private String getDefectName(Double value, MeasurementParameterLibrary parameterLibrary) {
+    private String getDefectName(Double value,MeasurementParameterLibraryDto parameterLibrary) {
         return String.join("", parameterLibrary.getParameterName()
                                      , String.valueOf(value)
                                      , parameterLibrary.getUnitMeasurement());
@@ -120,7 +130,7 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
 
     private VisualMeasurementControl saveWithOneMeasuredParameter(VisualMeasurementControl defect
                                                             , UpdateVisualMeasurementControlDto defectDto
-                                                            , Set<MeasurementParameterLibrary> measuredParameters) {
+                                                            , List<MeasurementParameterLibraryDto> measuredParameters) {
         mapper.mapToUpdateDefectName(defect, getDefectName(defectDto.getMeasuredParameters().get(0).getValue()
                                    , getTypeMeasurementParameterLibrary(measuredParameters)));
         return repository.save(defect);
@@ -128,7 +138,7 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
 
     private VisualMeasurementControl saveWithArbitraryNumberMeasuredParameter(VisualMeasurementControl defect
                                                         , UpdateVisualMeasurementControlDto defectDto
-                                                        , Set<MeasurementParameterLibrary> measuredParameters) {
+                                                        , List<MeasurementParameterLibraryDto> measuredParameters) {
         defect = repository.save(defect);
         defect.setMeasuredParameters(measuredParameterService.save(
                 new ParameterMeasurementBuilder.Builder()

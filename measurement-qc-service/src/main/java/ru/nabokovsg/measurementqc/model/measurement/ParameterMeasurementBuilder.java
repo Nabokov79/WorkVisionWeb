@@ -1,16 +1,11 @@
 package ru.nabokovsg.measurementqc.model.measurement;
 
-import ru.nabokovsg.equipmentDiagnosedQCL.dto.measuredParameter.NewMeasuredParameterDto;
-import ru.nabokovsg.equipmentDiagnosedQCL.dto.measuredParameter.UpdateMeasuredParameterDto;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.library.LibraryDataType;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.library.MeasurementParameterLibrary;
-import ru.nabokovsg.equipmentDiagnosedQCL.model.qualityControl.VisualMeasurementControl;
+import ru.nabokovsg.measurementqc.dto.integration.MeasurementParameterLibraryDto;
 import ru.nabokovsg.measurementqc.dto.measuredParameter.NewMeasuredParameterDto;
 import ru.nabokovsg.measurementqc.dto.measuredParameter.UpdateMeasuredParameterDto;
 import ru.nabokovsg.measurementqc.model.qualityControl.VisualMeasurementControl;
 
 import java.util.List;
-import java.util.Set;
 
 public class ParameterMeasurementBuilder {
 
@@ -20,7 +15,7 @@ public class ParameterMeasurementBuilder {
     private final VisualMeasurementControl defect;
     private final List<NewMeasuredParameterDto> newMeasuredParameters;
     private final List<UpdateMeasuredParameterDto> updateMeasuredParameters;
-    private final Set<MeasurementParameterLibrary> measurementParameterLibraries;
+    private final List<MeasurementParameterLibraryDto> measurementParameterLibraries;
 
     public ParameterMeasurementBuilder(Builder builder) {
         this.libraryDataType = builder.libraryDataType;
@@ -56,7 +51,7 @@ public class ParameterMeasurementBuilder {
         return updateMeasuredParameters;
     }
 
-    public Set<MeasurementParameterLibrary> getMeasurementParameterLibraries() {
+    public List<MeasurementParameterLibraryDto> getMeasurementParameterLibraries() {
         return measurementParameterLibraries;
     }
 
@@ -68,7 +63,7 @@ public class ParameterMeasurementBuilder {
         private VisualMeasurementControl defect;
         private List<NewMeasuredParameterDto> newMeasuredParameters;
         private List<UpdateMeasuredParameterDto> updateMeasuredParameters;
-        private Set<MeasurementParameterLibrary> measurementParameterLibraries;
+        private List<MeasurementParameterLibraryDto> measurementParameterLibraries;
 
         public Builder libraryDataType(LibraryDataType libraryDataType) {
             this.libraryDataType = libraryDataType;
@@ -100,7 +95,7 @@ public class ParameterMeasurementBuilder {
             return this;
         }
 
-        public Builder measurementParameterLibraries(Set<MeasurementParameterLibrary> measurementParameterLibraries) {
+        public Builder measurementParameterLibraries(List<MeasurementParameterLibraryDto> measurementParameterLibraries) {
             this.measurementParameterLibraries = measurementParameterLibraries;
             return this;
         }

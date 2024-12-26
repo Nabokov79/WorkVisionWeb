@@ -2,13 +2,19 @@ package ru.nabokovsg.measurementqc.service.measurement;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.nabokovsg.measurementqc.client.MeasurementQCClient;
 import ru.nabokovsg.measurementqc.dto.identifiedDefect.NewIdentifiedDefectMeasurementDto;
 import ru.nabokovsg.measurementqc.dto.identifiedDefect.ResponseIdentifiedDefectMeasurementDto;
 import ru.nabokovsg.measurementqc.dto.identifiedDefect.UpdateIdentifiedDefectMeasurementDto;
+import ru.nabokovsg.measurementqc.dto.integration.AcceptableResidualThicknessDto;
+import ru.nabokovsg.measurementqc.dto.integration.EquipmentDto;
+import ru.nabokovsg.measurementqc.dto.integration.LibraryDto;
 import ru.nabokovsg.measurementqc.dto.measuredParameter.NewMeasuredParameterDto;
 import ru.nabokovsg.measurementqc.dto.measuredParameter.UpdateMeasuredParameterDto;
+import ru.nabokovsg.measurementqc.exceptions.NotFoundException;
 import ru.nabokovsg.measurementqc.mapper.measurement.IdentifiedDefectMeasurementMapper;
 import ru.nabokovsg.measurementqc.model.measurement.IdentifiedDefectMeasurement;
+import ru.nabokovsg.measurementqc.model.measurement.LibraryDataType;
 import ru.nabokovsg.measurementqc.model.measurement.ParameterMeasurementBuilder;
 import ru.nabokovsg.measurementqc.repository.measurement.IdentifiedDefectMeasurementRepository;
 import ru.nabokovsg.measurementqc.service.сalculation.CalculationIdentifiedDefectMeasurementService;
@@ -26,40 +32,39 @@ public class IdentifiedDefectMeasurementServiceImpl implements IdentifiedDefectM
 
     private final IdentifiedDefectMeasurementRepository repository;
     private final IdentifiedDefectMeasurementMapper mapper;
-    private final DefectLibraryService defectLibraryService;
-    private final EquipmentElementService equipmentElementService;
     private final MeasuredParameterService measuredParameterService;
     private final MeasurementParameterValidateService validateService;
     private final CalculationIdentifiedDefectMeasurementService measurementResultsUpdateService;
     private final CalculationMeasuredResidualThicknessService calculationMeasuredResidualThicknessService;
+    private final MeasurementQCClient client;
 
     @Override
     public ResponseIdentifiedDefectMeasurementDto save(NewIdentifiedDefectMeasurementDto identifiedDefectDto) {
         IdentifiedDefectMeasurement identifiedDefect = mapper.mapToIdentifiedDefectMeasurement(identifiedDefectDto);
-        DefectLibrary typeDefectLibrary = defectLibraryService.getById(identifiedDefectDto.getDefectId());
         identifiedDefect = validateService.searchIdentifiedDefectMeasurementDuplicate(identifiedDefect
                                                                                 , getAllByPredicate(identifiedDefect));
+        LibraryDto defectLibrary = client.getLibraryData(identifiedDefectDto.getDefectLibraryId(), LibraryDataType.IDENTIFIED_DEFECT);
         if (identifiedDefect.getId() == null) {
             mapper.mapWitEquipmentDiagnosedData(identifiedDefect
-                    , typeDefectLibrary
-                    , equipmentElementService.getEquipmentDiagnosedData(identifiedDefectDto.getElementId()));
+                    , defectLibrary
+                    , client.getEquipmentData(identifiedDefectDto.getElementId(), identifiedDefectDto.getPartElementId()));
             identifiedDefect = repository.save(identifiedDefect);
             identifiedDefect.setMeasuredParameters(measuredParameterService.save(
                     new ParameterMeasurementBuilder.Builder()
                             .libraryDataType(LibraryDataType.IDENTIFIED_DEFECT)
                             .identifiedDefect(identifiedDefect)
-                            .measurementParameterLibraries(typeDefectLibrary.getMeasuredParameters())
+                            .measurementParameterLibraries(defectLibrary.getMeasuredParameters())
                             .newMeasuredParameters(identifiedDefectDto.getMeasuredParameters())
                             .build()));
         } else {
             identifiedDefect.setMeasuredParameters(
                     measuredParameterService.update(identifiedDefect.getMeasuredParameters(), null));
         }
-        calculate(typeDefectLibrary
+        calculate(defectLibrary
                 , identifiedDefect
                 , identifiedDefectDto.getMeasuredParameters()
                                     .stream()
-                                    .collect(Collectors.toMap(NewMeasuredParameterDto::getParameterId
+                                    .collect(Collectors.toMap(NewMeasuredParameterDto::getParameterLibraryId
                                                             , NewMeasuredParameterDto::getValue)));
         return mapper.mapToResponseIdentifiedDefectDto(identifiedDefect);
     }
@@ -75,11 +80,11 @@ public class IdentifiedDefectMeasurementServiceImpl implements IdentifiedDefectM
         if (!Objects.equals(identifiedDefect.getId(), duplicate.getId())) {
             delete(identifiedDefectDto.getId());
         }
-        calculate(defectLibraryService.getById(duplicate.getDefectId())
+        calculate(client.getLibraryData(duplicate.getDefectLibraryId(), LibraryDataType.REPAIR)
                 , identifiedDefect
                 , identifiedDefectDto.getMeasuredParameters()
                                      .stream()
-                                     .collect(Collectors.toMap(UpdateMeasuredParameterDto::getParameterId
+                                     .collect(Collectors.toMap(UpdateMeasuredParameterDto::getId
                                                              , UpdateMeasuredParameterDto::getValue)));
         return mapper.mapToResponseIdentifiedDefectDto(repository.save(duplicate));
     }
@@ -99,10 +104,11 @@ public class IdentifiedDefectMeasurementServiceImpl implements IdentifiedDefectM
 
     @Override
     public void delete(Long id) {
-        IdentifiedDefectMeasurement identifiedDefect = getById(id);
-        measuredParameterService.deleteAll(LibraryDataType.IDENTIFIED_DEFECT, id);
-        repository.deleteById(id);
-        calculationMeasuredResidualThicknessService.updateResidualThicknessMeasurementsEquipmentElements(identifiedDefect);
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return;
+        }
+       throw new NotFoundException(String.format("Identified defect with id=%s not found for delete", id));
     }
 
     private IdentifiedDefectMeasurement getById(Long id) {
@@ -112,26 +118,31 @@ public class IdentifiedDefectMeasurementServiceImpl implements IdentifiedDefectM
 
     private Set<IdentifiedDefectMeasurement> getAllByPredicate(IdentifiedDefectMeasurement identifiedDefect) {
         if (identifiedDefect.getPartElementId() != null) {
-            return repository.findAllByEquipmentIdAndElementIdAndPartElementIdAndDefectId(identifiedDefect.getEquipmentId()
-                    , identifiedDefect.getElementId()
-                    , identifiedDefect.getPartElementId()
-                    , identifiedDefect.getDefectId());
+            return repository.findAllByEquipmentIdAndElementIdAndPartElementIdAndDefectLibraryId(
+                                                                              identifiedDefect.getEquipmentId()
+                                                                            , identifiedDefect.getElementId()
+                                                                            , identifiedDefect.getPartElementId()
+                                                                            , identifiedDefect.getDefectLibraryId());
         } else {
-            return repository.findAllByEquipmentIdAndElementIdAndDefectId(identifiedDefect.getEquipmentId()
-                    , identifiedDefect.getElementId()
-                    , identifiedDefect.getDefectId());
+            return repository.findAllByEquipmentIdAndElementIdAndDefectLibraryId(identifiedDefect.getEquipmentId()
+                                                                               , identifiedDefect.getElementId()
+                                                                               , identifiedDefect.getDefectLibraryId());
         }
     }
 
 
-    private void calculate(DefectLibrary typeDefectLibrary
+    private void calculate(LibraryDto defectLibrary
                          , IdentifiedDefectMeasurement identifiedDefect
                          , Map<Long, Double> measurementValues) {
-        if (typeDefectLibrary.getUseCalculateThickness()) {
-            measurementResultsUpdateService.calculateByResidualThickness(identifiedDefect);
-            calculationMeasuredResidualThicknessService.updateResidualThicknessMeasurementsEquipmentElements(identifiedDefect);
+        if (defectLibrary.getUseCalculateThickness()) {
+            EquipmentDto equipment = client.getEquipmentData(identifiedDefect.getElementId()
+                                                           , identifiedDefect.getPartElementId());
+            AcceptableResidualThicknessDto acceptableThickness = client.getAcceptableResidualThickness(equipment);
+            measurementResultsUpdateService.calculateByResidualThickness(identifiedDefect,acceptableThickness);
+            calculationMeasuredResidualThicknessService.updateResidualThicknessMeasurementsEquipmentElements(
+                                                                     identifiedDefect, equipment, acceptableThickness);
         } else {
-            measurementResultsUpdateService.calculateByMaxAllowedValue(typeDefectLibrary, identifiedDefect, measurementValues);
+            measurementResultsUpdateService.calculateByMaxAllowedValue(defectLibrary, identifiedDefect, measurementValues);
         }
     }
 }

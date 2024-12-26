@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ru.nabokovsg.equipmentDiagnosedQCL.dto.measuredParameter.UpdateMeasuredParameterDto;
 import ru.nabokovsg.measurementqc.dto.measuredParameter.UpdateMeasuredParameterDto;
 
 import java.util.List;
@@ -34,8 +33,8 @@ public class UpdateVisualMeasurementControlDto {
     @Schema(description = "Типоразмер соединяемых элементов")
     @NotBlank(message = "standardSize should not be blank")
     private String standardSize;
-    @Schema(description = "Идентификатор дефекта")
-    private Long defectId;
+    @Schema(description = "Идентификатор типа дефекта")
+    private Long defectLibraryId;
     @Schema(description = "Координаты расположения дефекта")
     @NotBlank(message = "coordinates should not be blank")
     private String coordinates;
